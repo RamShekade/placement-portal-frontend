@@ -16,7 +16,7 @@ function Login() {
     setError('')
 
     try {
-      const res = await fetch('https://placement-portal-backend.mishranamanshailendra.workers.dev/api/login', {
+      const res = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
