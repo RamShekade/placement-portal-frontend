@@ -1,54 +1,91 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react';
+import './Login.css';
+import backgroundImage from '../assets/images/Sign-In Page.png';
 
-function Login() {
-  const navigate = useNavigate()
+const Login = () => {
+  const [studentId, setStudentId] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState({ gr_no: '', password: '' })
-  const [error, setError] = useState('')
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
+    // Validate student ID length
+    if (studentId.length !== 11) {
+      setError('❌ Student ID must be exactly 11 characters.');
+      return;
+    }
 
     try {
-      const res = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/login', {
+      setLoading(true);
+
+      const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/student/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      })
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          gr_number: studentId,
+          password: password
+        })
+      });
 
-      const data = await res.json()
+      const data = await response.json();
 
-      if (res.ok) {
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('gr_no', form.gr_no)
-        navigate('/dashboard')
-      } else {
-        setError(data.error || 'Login failed')
+      if (!response.ok) {
+        // Backend returned error (400/401 etc.)
+        setError(data?.message || '❌ Login failed. Try again.');
+        return;
       }
-    } catch (err) {
-      setError('Something went wrong')
+
+     localStorage.setItem('token', data.token);
+    localStorage.setItem('gr_number', studentId);
+
+    if (data.password_updated === 0) {
+      // First-time login → force password update
+      window.location.href = '/pass';
+    } else {
+      // Password already updated → go to dashboard
+      window.location.href = '/student-dashboard';
     }
-  }
+
+
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('❌ Server error. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto' }}>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="gr_no" placeholder="GR No" onChange={handleChange} required /><br />
-        <input type="password" name="password" placeholder="Password" onChange={handleChange} required /><br />
-        <button type="submit">Login</button>
-        <button onClick={() => navigate('/register')}>Register</button>
+    <div className="login-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <form className="login-form" onSubmit={handleLogin}>
+        <h2>STUDENT LOGIN</h2>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <input
+          type="text"
+          placeholder="Student ID"
+          value={studentId}
+          onChange={(e) => setStudentId(e.target.value)}
+          maxLength={11}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

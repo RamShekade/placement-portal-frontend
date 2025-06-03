@@ -47,21 +47,49 @@ export default function Home() {
   };
 
   const handleSendEmails = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/send-creds-batch', {
-        method: 'POST',
-      });
+  try {
+    setLoading(true);
 
-      const result = await response.json();
-      setEmailStatus(`✅ Sent: ${result.message}\n❌ Failed: ${result.failed.length}`);
-      console.log(result.failed); // view failed ones in console
-    } catch (err) {
-      setEmailStatus(`❌ Error sending emails: ${err.message}`);
-    } finally {
-      setLoading(false);
+    const response = await fetch(
+      'https://placement-portal-backend.ramshekade20.workers.dev/api/send-creds-batch',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    // Ensure the server responded properly
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("❌ Server Error:", text);
+      setEmailStatus("❌ Server Error while sending emails.");
+      return;
     }
-  };
+
+    const result = await response.json();
+
+    // Safe check for failed key
+    const failedList = result.failed || result.totalFailed || [];
+    const failedCount = Array.isArray(failedList) ? failedList.length : 0;
+
+    // Message UI
+    setEmailStatus(`✅ ${result.message || "Batch completed"}\n❌ Failed to send: ${failedCount}`);
+    
+    // Minimal and safe logging
+    if (failedCount > 0) {
+      console.warn("📨 Failed recipients:", failedList.map(f => f.email));
+    }
+
+  } catch (err) {
+    console.error("❌ Error:", err);
+    setEmailStatus("❌ Error sending emails. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
