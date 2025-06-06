@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Login from './components/Login'
-import Register from './components/Register'
-import Dashboard from './pages/Dashboard'
+import Login from './student/components/Login'
+import Register from './student/components/Register'
+import Dashboard from './student/components/Dashboard'
 import Home from './pages/Home'
-import ChangePassword from './components/ChangePassword'
-import StudentDashboard from './pages/StudentDashboard'
+import ChangePassword from './student/components/ChangePassword'
+import StudentDashboard from './student/pages/StudentDashboard'
 
 function App() {
   return (

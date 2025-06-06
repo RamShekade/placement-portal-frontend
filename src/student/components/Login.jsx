@@ -94,7 +94,7 @@
 
 import React, { useState } from 'react';
 import './Login.css';
-import dmceLogo from '../assets/images/dmce.png';
+import dmceLogo from '../../assets/images/dmce.png';
 
 const Login = () => {
   const [studentId, setStudentId] = useState('');
@@ -120,7 +120,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/student/login', {
+      const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
