@@ -5,7 +5,7 @@ import './StudentDashboard.css';
 
 const StudentDashboard = () => {
   const grNumber = localStorage.getItem('gr_number') || 'Unknown';
-  const studentName = localStorage.getItem('student_name') || 'Ashitosh Sabale';
+  const studentName = localStorage.getItem('student_name') || 'Hello Student';
   const navigate = useNavigate();
 
   const handleLogout = () => {
