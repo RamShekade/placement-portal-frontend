@@ -1,5 +1,5 @@
 import React from 'react';
-import dmceLogo from '../../../assets/images/dmce.png';
+import dmceLogo from '../assets/images/dmce.png';
 
 const CollegeHeader = () => {
   return (

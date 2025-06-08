@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import CollegeHeader from './shared/CollegeHeader';
+	 import React, { useState, useEffect } from 'react';
+import CollegeHeader from '../../shared/CollegeHeader';
 import Profile from "../sections/profile";
 import PersonalDetails from "../sections/PersonalDetails";
 import AcademicDetails from '../sections/AcademicDetails'; 
 import EducationalQualification from '../sections/EducationalQualification';
 import SkillsAndCertificates from '../sections/SkillsAndCertificates';
+import InternshipAndWorkExperience from '../sections/InternshipAndWorkExperience';
+import ResumeUpload from "../sections/ResumeUpload";
+import Achievements from "../sections/Achievements";
+import SocialLinks from "../sections/SocialLinks";
+
+
 
 
 
@@ -28,7 +34,9 @@ const Dashboard = () => {
     { key: 'skills', label: 'Skills & Certificates' },
     { key: 'internship', label: 'Internship & Work Experience' },
     { key: 'resume', label: 'Resume' },
-    { key: 'achievements', label: 'Achievement & Extra-Curriculars' }
+    { key: 'social', label: 'Social Links' },
+    { key: 'achievements', label: 'Achievement & Extra-Curriculars' },
+    
     
   ];
 
@@ -44,6 +52,14 @@ const Dashboard = () => {
             return <EducationalQualification />;
             case 'skills':
               return <SkillsAndCertificates />;
+              case 'internship':
+              return <InternshipAndWorkExperience />;
+              case 'resume':
+              return <ResumeUpload />;
+               case 'achievements':
+              return <Achievements />;
+              case 'social':
+              return <SocialLinks />;
       // Add other components as needed
       default:
         return <Profile />;
@@ -84,7 +100,7 @@ const Dashboard = () => {
         {/* Sidebar only on desktop */}
         {!isMobile && (
           <aside style={{
-            width: '260px',
+            width: '270px',
             backgroundColor: '#fff',
             padding: '20px',
             boxSizing: 'border-box',

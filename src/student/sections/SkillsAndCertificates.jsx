@@ -5,16 +5,42 @@ const SkillsAndCertificates = () => {
     programmingLanguages: '',
     skills: '',
     techStack: '',
-    certifications: [
-      { name: '', link: '' }
-    ],
-    projects: [
-      { title: '', description: '' }
-    ]
+    certifications: [{ name: '', link: '' }],
+    projects: [{ title: '', description: '', url: '' }]
   });
 
+  const [suggestions, setSuggestions] = useState({
+    programmingLanguages: [],
+    skills: []
+  });
+
+  const fetchSuggestions = async (type, value) => {
+    if (value.length < 2) {
+      setSuggestions(prev => ({ ...prev, [type]: [] }));
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://api.datamuse.com/sug?s=${value}`);
+      const data = await res.json();
+      const words = data.map(item => item.word);
+      setSuggestions(prev => ({ ...prev, [type]: words }));
+    } catch (err) {
+      console.error('Error fetching suggestions:', err);
+    }
+  };
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    if (name === 'programmingLanguages' || name === 'skills') {
+      fetchSuggestions(name, value);
+    }
+  };
+
+  const handleSelectSuggestion = (field, word) => {
+    setForm(prev => ({ ...prev, [field]: word }));
+    setSuggestions(prev => ({ ...prev, [field]: [] }));
   };
 
   const handleCertificationChange = (index, e) => {
@@ -37,7 +63,7 @@ const SkillsAndCertificates = () => {
 
   const addProject = () => {
     if (form.projects.length < 3) {
-      setForm({ ...form, projects: [...form.projects, { title: '', description: '' }] });
+      setForm({ ...form, projects: [...form.projects, { title: '', description: '', url: '' }] });
     }
   };
 
@@ -55,7 +81,8 @@ const SkillsAndCertificates = () => {
     fontSize: '16px',
     color: '#000',
     backgroundColor: '#fff',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    position: 'relative'
   };
 
   const labelStyle = {
@@ -72,6 +99,52 @@ const SkillsAndCertificates = () => {
     boxShadow: '0 4px 10px rgba(30, 30, 63, 0.1)',
     marginBottom: '20px'
   };
+
+  const suggestionBoxStyle = {
+    position: 'absolute',
+    backgroundColor: '#1e1e3f',
+    color: 'white',
+    border: '1px solid #ccc',
+    zIndex: 100,
+    width: '100%',
+    borderRadius: '6px',
+    marginTop: '2px',
+    maxHeight: '150px',
+    overflowY: 'auto'
+  };
+
+  const renderInputWithSuggestions = (label, name, placeholder) => (
+    <div style={{ position: 'relative' }}>
+      <label style={labelStyle}>{label} <span style={{ color: 'red' }}>*</span></label>
+      <input
+        type="text"
+        name={name}
+        placeholder={placeholder}
+        value={form[name]}
+        onChange={handleChange}
+        required
+        style={inputStyle}
+        autoComplete="off"
+      />
+      {suggestions[name].length > 0 && (
+        <div style={suggestionBoxStyle}>
+          {suggestions[name].map((s, idx) => (
+            <div
+              key={idx}
+              onClick={() => handleSelectSuggestion(name, s)}
+              style={{
+                padding: '10px',
+                cursor: 'pointer',
+                borderBottom: '1px solid #333'
+              }}
+            >
+              {s}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div style={{
@@ -95,44 +168,8 @@ const SkillsAndCertificates = () => {
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '20px' }}>
-        <div>
-          <label style={labelStyle}>Known Programming Languages <span style={{ color: 'red' }}>*</span></label>
-          <input
-            type="text"
-            name="programmingLanguages"
-            placeholder="E.g., JavaScript, Python, Java"
-            value={form.programmingLanguages}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
-        </div>
-
-        <div>
-          <label style={labelStyle}>Skills <span style={{ color: 'red' }}>*</span></label>
-          <input
-            type="text"
-            name="skills"
-            placeholder="E.g., Problem Solving, Data Structures"
-            value={form.skills}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
-        </div>
-
-        <div>
-          <label style={labelStyle}>Tech Stack <span style={{ color: 'red' }}>*</span></label>
-          <input
-            type="text"
-            name="techStack"
-            placeholder="E.g., MERN, LAMP, .NET"
-            value={form.techStack}
-            onChange={handleChange}
-            required
-            style={inputStyle}
-          />
-        </div>
+        {renderInputWithSuggestions("Known Programming Languages", "programmingLanguages", "E.g., JavaScript, Python, Java")}
+        {renderInputWithSuggestions("Skills", "skills", "E.g., Problem Solving, Data Structures")}
 
         {/* Certifications Section */}
         <div>
@@ -205,6 +242,15 @@ const SkillsAndCertificates = () => {
                   resize: 'vertical',
                   fontFamily: 'inherit'
                 }}
+              />
+              <label style={{ ...labelStyle, marginTop: '12px' }}>Project URL</label>
+              <input
+                type="url"
+                name="url"
+                placeholder="https://yourproject.com"
+                value={project.url}
+                onChange={(e) => handleProjectChange(idx, e)}
+                style={inputStyle}
               />
             </div>
           ))}

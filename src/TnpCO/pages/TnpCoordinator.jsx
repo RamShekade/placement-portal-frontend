@@ -1,14 +1,36 @@
+
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
+import CollegeHeader from '../../shared/CollegeHeader';
+import StatusMessage from '../components/StatusMessage';
+import './TnpCoordinator.css';
 
-export default function Home() {
+const TnpCoordinator = () => {
   const [data, setData] = useState([]);
+  const [file, setFile] = useState(null);
+  const [error, setError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleFile = (e) => {
-    const file = e.target.files[0];
-    console.log('📁 File selected:', file.name);
+    const selectedFile = e.target.files[0];
+    setError('');
+    
+    if (!selectedFile) return;
+
+    const isExcel = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
+      'application/vnd.ms-excel'
+    ].includes(selectedFile.type);
+
+    if (!isExcel) {
+      setError('Only Excel files (.xls, .xlsx) are allowed.');
+      setFile(null);
+      return;
+    }
+
+    console.log('📁 File selected:', selectedFile.name);
+    setFile(selectedFile);
     
     const reader = new FileReader();
 
@@ -30,30 +52,32 @@ export default function Home() {
         setData(jsonData);
       } catch (error) {
         console.error('❌ Excel parsing error:', error);
-        alert('Error parsing Excel file. Please check the format.');
+        setError('Error parsing Excel file. Please check the format.');
+        setFile(null);
       }
     };
 
     reader.onerror = (error) => {
       console.error('❌ File reading error:', error);
-      alert('Error reading file. Please try again.');
+      setError('Error reading file. Please try again.');
+      setFile(null);
     };
 
-    reader.readAsBinaryString(file);
+    reader.readAsBinaryString(selectedFile);
   };
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const handleUpload = async () => {
     if (!data.length) {
-      console.warn('⚠️ No data to upload');
-      alert('Please upload and parse a file first!');
+      setError('Please select an Excel file before uploading.');
       return;
     }
 
     try {
       setLoading(true);
       setUploadSuccess(null);
+      setError('');
       const batchSize = 30;
       let index = 0;
       let overallResult = [];
@@ -111,7 +135,7 @@ export default function Home() {
         index += batchSize;
 
         if (index < data.length) {
-          console.log(`⏳ Waiting 2s before next batch...`);
+          console.log(`⏳ Waiting 1s before next batch...`);
           await delay(1000);
         }
       }
@@ -129,63 +153,75 @@ export default function Home() {
       }`;
 
       setUploadSuccess(successMessage);
+      setFile(null);
+      setData([]);
 
     } catch (err) {
       console.error('❌ Upload failed:', err);
-      setUploadSuccess(`❌ Error uploading: ${err.message}`);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h2>📤 Upload Students Excel</h2>
-      <input 
-        type="file" 
-        accept=".xlsx, .xls" 
-        onChange={handleFile} 
-        onClick={(e) => e.target.value = null} // Reset file input on click
-      />
-      <br /><br />
-      <button 
-        onClick={handleUpload} 
-        disabled={loading}
-        style={{
-          padding: '8px 16px',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.7 : 1
-        }}
-      >
-        {loading ? '⏳ Uploading...' : '📤 Upload to DB'}
-      </button>
+    <div className="tnp-container">
+      <CollegeHeader />
+      <div className="upload-section">
+        <h2 className="header">TnP Coordinator Portal</h2>
 
-      {loading && (
-        <p style={{ color: '#666' }}>
-          Processing... Please keep this tab open.
-        </p>
-      )}
+        <div className={`file-box ${loading ? 'loading' : ''}`}>
+          {loading ? (
+            <div className="loading-indicator">
+              <div className="spinner"></div>
+              <p>Processing... Please keep this tab open.</p>
+            </div>
+          ) : file ? (
+            <div className="file-info">
+              <p className="file-name">{file.name}</p>
+              <p className="file-size">
+                Records to process: {data.length || 'Calculating...'}
+              </p>
+            </div>
+          ) : (
+            <p className="file-name placeholder">
+              Drag & drop your Excel file here or click "Choose File"
+            </p>
+          )}
+        </div>
 
-      {uploadSuccess && (
-        <pre style={{
-          background: '#f3f3f3',
-          padding: '1em',
-          borderRadius: '4px',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word'
-        }}>
-          {uploadSuccess}
-        </pre>
-      )}
+        {error && <p className="error-msg">{error}</p>}
+        {uploadSuccess && (
+          <div className="success-msg">
+            <pre>{uploadSuccess}</pre>
+          </div>
+        )}
 
-      <div style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
-        <p>📝 Notes:</p>
-        <ul>
-          <li>Upload Excel files with columns: GR, Email</li>
-          <li>Data is processed in batches of 2</li>
-          <li>Please wait for completion</li>
-        </ul>
+        <input
+          id="fileInput"
+          type="file"
+          accept=".xls,.xlsx"
+          onChange={handleFile}
+          onClick={(e) => e.target.value = null}
+          style={{ display: 'none' }}
+        />
+
+        <div className="button-group">
+          <label htmlFor="fileInput" className="choose-file-btn">
+            Choose File
+          </label>
+
+          <button
+            onClick={handleUpload}
+            disabled={!file || loading}
+            className={`upload-btn ${(!file || loading) ? 'disabled' : ''}`}
+          >
+            {loading ? '⏳ Processing...' : '📤 Upload & Send Mail'}
+          </button>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default TnpCoordinator;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-const Profile = () => {
+const ResumeUpload = () => {
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [filename, setFilename] = useState('');
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -10,30 +10,30 @@ const Profile = () => {
     setError('');
 
     if (selectedFile) {
-      const isValidType = ['image/png', 'image/jpeg', 'image/jpg'].includes(selectedFile.type);
-      const isValidSize = selectedFile.size <= 512 * 1024;
+      const isValidType = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(selectedFile.type);
+      const isValidSize = selectedFile.size <= 1024 * 1024; // 1MB
 
       if (!isValidType) {
-        setError('Only PNG, JPG, or JPEG files are allowed.');
+        setError('Only PDF, DOC, or DOCX files are allowed.');
         return;
       }
 
       if (!isValidSize) {
-        setError('File size must be less than 512KB.');
+        setError('File size must be less than 1MB.');
         return;
       }
 
       setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
+      setFilename(selectedFile.name);
     }
   };
 
   const handleUpload = () => {
     if (file) {
-      alert('Photo uploaded successfully.');
+      alert('Resume uploaded successfully.');
       console.log('Uploaded file:', file);
     } else {
-      alert('Please select a valid photo.');
+      alert('Please select a valid resume.');
     }
   };
 
@@ -59,43 +59,39 @@ const Profile = () => {
         fontSize: '18px',
         marginBottom: '25px'
       }}>
-        Upload Profile Photo *
+        Upload Resume *
       </div>
 
       <div style={{
         width: '280px',
-        height: '220px',
+        height: '150px',
         border: '3px dashed #1e3a8a',
         borderRadius: '12px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden',
         margin: '0 auto 15px auto',
         backgroundColor: '#f0f4ff',
+        padding: '10px',
+        fontSize: '15px',
+        color: '#000'
       }}>
-        {preview ? (
-          <img
-            src={preview}
-            alt="Preview"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+        {filename ? (
+          <span>{filename}</span>
         ) : (
-          <span style={{ color: '#999', fontSize: '16px' }}>
-            No Photo Selected
-          </span>
+          <span style={{ color: '#999' }}>No Resume Selected</span>
         )}
       </div>
 
       <input
         type="file"
-        accept=".jpg,.jpeg,.png"
+        accept=".pdf,.doc,.docx"
         onChange={handleChange}
         style={{ display: 'none' }}
-        id="fileInput"
+        id="resumeInput"
       />
 
-      <label htmlFor="fileInput" style={{
+      <label htmlFor="resumeInput" style={{
         cursor: 'pointer',
         backgroundColor: '#1e3a8a',
         color: '#fff',
@@ -106,7 +102,7 @@ const Profile = () => {
         marginBottom: '10px',
         display: 'inline-block',
       }}>
-        Choose Photo 
+        Choose Resume
       </label>
 
       {error && (
@@ -114,10 +110,10 @@ const Profile = () => {
       )}
 
       <p style={{ fontSize: '14px', color: '#444', marginTop: '6px' }}>
-        Upload a photo with a plain background. Max size: <strong>512KB</strong>
+        Upload your resume. Max size: <strong>1MB</strong>
       </p>
       <p style={{ fontSize: '14px', color: 'red', marginTop: '4px' }}>
-        Accepted formats: <strong>.png</strong>, <strong>.jpg</strong>, <strong>.jpeg</strong>
+        Accepted formats: <strong>.pdf</strong>, <strong>.doc</strong>, <strong>.docx</strong>
       </p>
 
       <button
@@ -142,4 +138,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ResumeUpload;

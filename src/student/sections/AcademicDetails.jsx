@@ -10,7 +10,14 @@ const AcademicDetails = () => {
   });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'studentId') {
+      if (/^\d{0,12}$/.test(value)) {
+        setForm({ ...form, [name]: value });
+      }
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -28,7 +35,25 @@ const AcademicDetails = () => {
     backgroundColor: '#fff',
     color: '#000',
     boxSizing: 'border-box',
+    fontWeight: '500'
   };
+
+  const yearOptions = [];
+  for (let year = 2020; year <= 2030; year++) {
+    yearOptions.push(<option key={year} value={year}>{year}</option>);
+  }
+
+  const departmentOptions = [
+    'Humanities and Science',
+    'Information Technology',
+    'Civil Engineering',
+    'Civil & Infrastructure Engineering',
+    'Mechanical Engineering',
+    'Computer Engineering',
+    'Artificial Intelligence and Data Science Engineering',
+    'Electronics and Telecommunication Engineering (Formerly Electronic Engineering',
+    'Chemical Engineering)'
+  ];
 
   return (
     <div style={{
@@ -66,42 +91,54 @@ const AcademicDetails = () => {
           value={form.studentId}
           onChange={handleChange}
           required
+          maxLength="12"
+          pattern="\d{12}"
           style={inputStyle}
         />
+
         <input
           name="currentClass"
-          placeholder="Current Class *"
+          placeholder="Current Year * "
           value={form.currentClass}
           onChange={handleChange}
           required
           style={inputStyle}
         />
-        <input
-          type="number"
+
+        <select
           name="admissionYear"
-          placeholder="Year of Admission *"
           value={form.admissionYear}
           onChange={handleChange}
           required
-          style={inputStyle}
-        />
-        <input
-          type="number"
+          style={{ ...inputStyle, color: form.admissionYear ? '#000' : '#666' }}
+        >
+          <option value="">Admission Year *</option>
+          {yearOptions}
+        </select>
+
+        <select
           name="passYear"
-          placeholder="Year of Passing *"
           value={form.passYear}
           onChange={handleChange}
           required
-          style={inputStyle}
-        />
-        <input
+          style={{ ...inputStyle, color: form.passYear ? '#000' : '#666' }}
+        >
+          <option value="">Passing Year *</option>
+          {yearOptions}
+        </select>
+
+        <select
           name="department"
-          placeholder="Department *"
           value={form.department}
           onChange={handleChange}
           required
-          style={inputStyle}
-        />
+          style={{ ...inputStyle, color: form.department ? '#000' : '#666' }}
+        >
+          <option value="">Select Department *</option>
+          {departmentOptions.map((dept, index) => (
+            <option key={index} value={dept}>{dept}</option>
+          ))}
+        </select>
 
         <div style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
           <button
