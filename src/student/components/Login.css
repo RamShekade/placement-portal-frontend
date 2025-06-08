@@ -72,11 +72,49 @@ html, body, #root {
   color: black;
 }
 
+/* Password Field with Eye Icon */
+.password-field {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.password-field input {
+  width: 100%;
+  padding: 0.8rem;
+  padding-right: 3rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #d4dff3;
+  color: black;
+  margin-bottom: 0;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #121633;
+  font-size: 1.2rem;
+  padding: 0.3rem;
+}
+
+.password-toggle-btn:hover {
+  color: #3b82f6;
+}
+
 .login-form input::placeholder {
   color: black;
 }
 
-.login-form button {
+.login-btn {
   width: 100%;
   padding: 0.8rem;
   background-color: #1e3a8a;
@@ -88,7 +126,7 @@ html, body, #root {
   transition: background 0.3s ease;
 }
 
-.login-form button:hover {
+.login-btn:hover {
   background-color: #3b82f6;
 }
 

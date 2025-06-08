@@ -1,29 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const AcademicDetails = () => {
-  const [form, setForm] = useState({
-    studentId: '',
-    currentClass: '',
-    admissionYear: '',
-    passYear: '',
-    department: ''
-  });
+const AcademicDetails = ({ data, setData }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'studentId') {
+
+    if (name === 'student_id') {
       if (/^\d{0,12}$/.test(value)) {
-        setForm({ ...form, [name]: value });
+        setData(prev => ({ ...prev, [name]: value }));
       }
     } else {
-      setForm({ ...form, [name]: value });
+      setData(prev => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     alert('Academic details submitted successfully.');
-    console.log('Form Data:', form);
+    console.log('Form Data:', data);
   };
 
   const inputStyle = {
@@ -35,7 +29,7 @@ const AcademicDetails = () => {
     backgroundColor: '#fff',
     color: '#000',
     boxSizing: 'border-box',
-    fontWeight: '500'
+    fontWeight: '500',
   };
 
   const yearOptions = [];
@@ -51,8 +45,8 @@ const AcademicDetails = () => {
     'Mechanical Engineering',
     'Computer Engineering',
     'Artificial Intelligence and Data Science Engineering',
-    'Electronics and Telecommunication Engineering (Formerly Electronic Engineering',
-    'Chemical Engineering)'
+    'Electronics and Telecommunication Engineering (Formerly Electronic Engineering)',
+    'Chemical Engineering'
   ];
 
   return (
@@ -86,9 +80,9 @@ const AcademicDetails = () => {
         }}
       >
         <input
-          name="studentId"
+          name="student_id"
           placeholder="Student ID *"
-          value={form.studentId}
+          value={data.student_id || ''}
           onChange={handleChange}
           required
           maxLength="12"
@@ -97,31 +91,31 @@ const AcademicDetails = () => {
         />
 
         <input
-          name="currentClass"
-          placeholder="Current Year * "
-          value={form.currentClass}
+          name="current_year"
+          placeholder="Current Year *"
+          value={data.current_year || ''}
           onChange={handleChange}
           required
           style={inputStyle}
         />
 
         <select
-          name="admissionYear"
-          value={form.admissionYear}
+          name="year_of_admission"
+          value={data.year_of_admission || ''}
           onChange={handleChange}
           required
-          style={{ ...inputStyle, color: form.admissionYear ? '#000' : '#666' }}
+          style={{ ...inputStyle, color: data.year_of_admission ? '#000' : '#666' }}
         >
           <option value="">Admission Year *</option>
           {yearOptions}
         </select>
 
         <select
-          name="passYear"
-          value={form.passYear}
+          name="expected_graduation_year"
+          value={data.expected_graduation_year || ''}
           onChange={handleChange}
           required
-          style={{ ...inputStyle, color: form.passYear ? '#000' : '#666' }}
+          style={{ ...inputStyle, color: data.expected_graduation_year ? '#000' : '#666' }}
         >
           <option value="">Passing Year *</option>
           {yearOptions}
@@ -129,10 +123,10 @@ const AcademicDetails = () => {
 
         <select
           name="department"
-          value={form.department}
+          value={data.department || ''}
           onChange={handleChange}
           required
-          style={{ ...inputStyle, color: form.department ? '#000' : '#666' }}
+          style={{ ...inputStyle, color: data.department ? '#000' : '#666' }}
         >
           <option value="">Select Department *</option>
           {departmentOptions.map((dept, index) => (

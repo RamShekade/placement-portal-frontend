@@ -11,7 +11,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/pass" element={<ChangePassword/>} />
+        <Route path="/update-pass" element={<ChangePassword/>} />
 
         <Route path="/upload" element={<TnpCoordinator />} />
         <Route path="/register" element={<Register />} />

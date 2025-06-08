@@ -1,26 +1,16 @@
 import React, { useState } from 'react';
 
-const EducationalQualification = () => {
-  const [form, setForm] = useState({
-    tenthPercent: '', tenthYear: '',
-    twelfthPercent: '', twelfthYear: '',
-    diplomaPercent: '', diplomaYear: '',
-    fySem1: '', fySem2: '',
-    sySem3: '', sySem4: '',
-    tySem5: '', tySem6: '',
-    finalSem7: '', finalSem8: '',
-    liveKT: ''  // ✅ added liveKT field
-  });
-
+const EducationalQualification = ({data, setData}) => {
+  
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setData({ ...data, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const has12th = form.twelfthPercent || form.twelfthYear;
-    const hasDiploma = form.diplomaPercent || form.diplomaYear;
+    const has12th = data.twelfthPercent || data.twelfthYear;
+    const hasDiploma = data.diplomaPercent || data.diplomaYear;
 
     if (!has12th && !hasDiploma) {
       alert('Please fill either 12th or Diploma details.');
@@ -28,7 +18,7 @@ const EducationalQualification = () => {
     }
 
     alert('Educational Qualification submitted successfully.');
-    console.log('Form Data:', form);
+    console.log('data Data:', data);
   };
 
   const inputStyle = {
@@ -82,50 +72,50 @@ const EducationalQualification = () => {
         <strong>⚠️ Note:</strong> If marks are not available, type <strong>"NA"</strong>.
       </div>
 
-      <form onSubmit={handleSubmit} style={{
+      <data onSubmit={handleSubmit} style={{
         display: 'grid',
         gap: '20px',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))'
       }}>
         {/* 10th */}
         <div style={sectionHeaderStyle}>10th Details</div>
-        <input name="tenthPercent" placeholder="10th Percentage" value={form.tenthPercent} onChange={handleChange} style={inputStyle} required />
-        <input name="tenthYear" placeholder="Year of Passing" value={form.tenthYear} onChange={handleChange} style={inputStyle} required />
+        <input name="tenthPercent" placeholder="10th Percentage" value={data.tenthPercent} onChange={handleChange} style={inputStyle} required />
+        <input name="tenthYear" placeholder="Year of Passing" value={data.tenthYear} onChange={handleChange} style={inputStyle} required />
         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} />
 
         {/* 12th */}
         <div style={sectionHeaderStyle}>12th Details</div>
-        <input name="twelfthPercent" placeholder="12th Percentage" value={form.twelfthPercent} onChange={handleChange} style={inputStyle} />
-        <input name="twelfthYear" placeholder="Year of Passing" value={form.twelfthYear} onChange={handleChange} style={inputStyle} />
+        <input name="twelfthPercent" placeholder="12th Percentage" value={data.twelfthPercent} onChange={handleChange} style={inputStyle} />
+        <input name="twelfthYear" placeholder="Year of Passing" value={data.twelfthYear} onChange={handleChange} style={inputStyle} />
         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} />
 
         {/* Diploma */}
         <div style={sectionHeaderStyle}>Diploma Details</div>
-        <input name="diplomaPercent" placeholder="Diploma Percentage" value={form.diplomaPercent} onChange={handleChange} style={inputStyle} />
-        <input name="diplomaYear" placeholder="Year of Passing" value={form.diplomaYear} onChange={handleChange} style={inputStyle} />
+        <input name="diplomaPercent" placeholder="Diploma Percentage" value={data.diplomaPercent} onChange={handleChange} style={inputStyle} />
+        <input name="diplomaYear" placeholder="Year of Passing" value={data.diplomaYear} onChange={handleChange} style={inputStyle} />
         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} />
 
         {/* First Year */}
         <div style={sectionHeaderStyle}>First Year</div>
-        <input name="fySem1" placeholder="Sem 1 CGPA" value={form.fySem1} onChange={handleChange} style={inputStyle} required />
-        <input name="fySem2" placeholder="Sem 2 CGPA" value={form.fySem2} onChange={handleChange} style={inputStyle} required />
+        <input name="fySem1" placeholder="Sem 1 CGPA" value={data.fySem1} onChange={handleChange} style={inputStyle} required />
+        <input name="fySem2" placeholder="Sem 2 CGPA" value={data.fySem2} onChange={handleChange} style={inputStyle} required />
 
         {/* Second Year */}
         <div style={sectionHeaderStyle}>Second Year</div>
-        <input name="sySem3" placeholder="Sem 3 CGPA" value={form.sySem3} onChange={handleChange} style={inputStyle} required />
-        <input name="sySem4" placeholder="Sem 4 CGPA" value={form.sySem4} onChange={handleChange} style={inputStyle} required />
+        <input name="sySem3" placeholder="Sem 3 CGPA" value={data.sySem3} onChange={handleChange} style={inputStyle} required />
+        <input name="sySem4" placeholder="Sem 4 CGPA" value={data.sySem4} onChange={handleChange} style={inputStyle} required />
 
       
 
         {/* Third Year */}
         <div style={sectionHeaderStyle}>Third Year</div>
-        <input name="tySem5" placeholder="Sem 5 CGPA" value={form.tySem5} onChange={handleChange} style={inputStyle} required />
-        <input name="tySem6" placeholder="Sem 6 CGPA" value={form.tySem6} onChange={handleChange} style={inputStyle} required />
+        <input name="tySem5" placeholder="Sem 5 CGPA" value={data.tySem5} onChange={handleChange} style={inputStyle} required />
+        <input name="tySem6" placeholder="Sem 6 CGPA" value={data.tySem6} onChange={handleChange} style={inputStyle} required />
 
         {/* Fourth Year */}
         <div style={sectionHeaderStyle}>Fourth Year</div>
-        <input name="finalSem7" placeholder="Sem 7 CGPA" value={form.finalSem7} onChange={handleChange} style={inputStyle} required />
-        <input name="finalSem8" placeholder="Sem 8 CGPA" value={form.finalSem8} onChange={handleChange} style={inputStyle} required />
+        <input name="finalSem7" placeholder="Sem 7 CGPA" value={data.finalSem7} onChange={handleChange} style={inputStyle} required />
+        <input name="finalSem8" placeholder="Sem 8 CGPA" value={data.finalSem8} onChange={handleChange} style={inputStyle} required />
 
 
   {/* ✅ Live KT Field */}
@@ -152,7 +142,7 @@ const EducationalQualification = () => {
       type="radio"
       name="liveKT"
       value="Yes"
-      checked={form.liveKT === 'Yes'}
+      checked={data.liveKT === 'Yes'}
       onChange={handleChange}
       style={{
         appearance: 'none',
@@ -162,7 +152,7 @@ const EducationalQualification = () => {
         borderRadius: '50%',
         backgroundColor: '#fff',
         cursor: 'pointer',
-        boxShadow: form.liveKT === 'Yes' ? 'inset 0 0 0 6px #1e1e3f' : 'none',
+        boxShadow: data.liveKT === 'Yes' ? 'inset 0 0 0 6px #1e1e3f' : 'none',
         transition: 'box-shadow 0.2s ease'
       }}
     />
@@ -180,7 +170,7 @@ const EducationalQualification = () => {
       type="radio"
       name="liveKT"
       value="No"
-      checked={form.liveKT === 'No'}
+      checked={data.liveKT === 'No'}
       onChange={handleChange}
       style={{
         appearance: 'none',
@@ -190,7 +180,7 @@ const EducationalQualification = () => {
         borderRadius: '50%',
         backgroundColor: '#fff',
         cursor: 'pointer',
-        boxShadow: form.liveKT === 'No' ? 'inset 0 0 0 6px #1e1e3f' : 'none',
+        boxShadow: data.liveKT === 'No' ? 'inset 0 0 0 6px #1e1e3f' : 'none',
         transition: 'box-shadow 0.2s ease'
       }}
     />
@@ -214,7 +204,7 @@ const EducationalQualification = () => {
             Submit
           </button>
         </div>
-      </form>
+      </data>
     </div>
   );
 };

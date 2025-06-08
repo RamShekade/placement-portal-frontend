@@ -1,14 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const SkillsAndCertificates = () => {
-  const [form, setForm] = useState({
-    programmingLanguages: '',
-    skills: '',
-    techStack: '',
-    certifications: [{ name: '', link: '' }],
-    projects: [{ title: '', description: '', url: '' }]
-  });
-
+const SkillsAndCertificates = ({ data, setData }) => {
   const [suggestions, setSuggestions] = useState({
     programmingLanguages: [],
     skills: []
@@ -32,45 +24,53 @@ const SkillsAndCertificates = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setData(prev => ({ ...prev, [name]: value }));
     if (name === 'programmingLanguages' || name === 'skills') {
       fetchSuggestions(name, value);
     }
   };
 
   const handleSelectSuggestion = (field, word) => {
-    setForm(prev => ({ ...prev, [field]: word }));
+    setData(prev => ({ ...prev, [field]: word }));
     setSuggestions(prev => ({ ...prev, [field]: [] }));
   };
 
   const handleCertificationChange = (index, e) => {
-    const certsCopy = [...form.certifications];
-    certsCopy[index][e.target.name] = e.target.value;
-    setForm({ ...form, certifications: certsCopy });
+    const certs = [...(data.certifications || [{ name: '', link: '' }])];
+    certs[index][e.target.name] = e.target.value;
+    setData(prev => ({ ...prev, certifications: certs }));
   };
 
   const addCertification = () => {
-    if (form.certifications.length < 3) {
-      setForm({ ...form, certifications: [...form.certifications, { name: '', link: '' }] });
+    const certs = data.certifications || [];
+    if (certs.length < 3) {
+      setData(prev => ({
+        ...prev,
+        certifications: [...certs, { name: '', link: '' }]
+      }));
     }
   };
 
   const handleProjectChange = (index, e) => {
-    const projectsCopy = [...form.projects];
-    projectsCopy[index][e.target.name] = e.target.value;
-    setForm({ ...form, projects: projectsCopy });
+    const projects = [...(data.projects || [{ title: '', description: '', url: '' }])];
+    projects[index][e.target.name] = e.target.value;
+    setData(prev => ({ ...prev, projects }));
   };
 
   const addProject = () => {
-    if (form.projects.length < 3) {
-      setForm({ ...form, projects: [...form.projects, { title: '', description: '', url: '' }] });
+    const projects = data.projects || [];
+    if (projects.length < 3) {
+      setData(prev => ({
+        ...prev,
+        projects: [...projects, { title: '', description: '', url: '' }]
+      }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     alert('Skills & Certificates submitted successfully.');
-    console.log('Form Data:', form);
+    console.log('Submitted:', data);
   };
 
   const inputStyle = {
@@ -120,7 +120,7 @@ const SkillsAndCertificates = () => {
         type="text"
         name={name}
         placeholder={placeholder}
-        value={form[name]}
+        value={data[name] || ''}
         onChange={handleChange}
         required
         style={inputStyle}
@@ -168,13 +168,13 @@ const SkillsAndCertificates = () => {
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '20px' }}>
-        {renderInputWithSuggestions("Known Programming Languages", "programmingLanguages", "E.g., JavaScript, Python, Java")}
-        {renderInputWithSuggestions("Skills", "skills", "E.g., Problem Solving, Data Structures")}
+        {renderInputWithSuggestions("Known Programming Languages", "programmingLanguages", "E.g., JavaScript, Python")}
+        {renderInputWithSuggestions("Skills", "skills", "E.g., Problem Solving, DSA")}
 
         {/* Certifications Section */}
         <div>
           <label style={{ ...labelStyle, marginBottom: '12px' }}>Certifications</label>
-          {form.certifications.map((cert, idx) => (
+          {(data.certifications || [{ name: '', link: '' }]).map((cert, idx) => (
             <div key={idx} style={cardStyle}>
               <label style={labelStyle}>Certification Name</label>
               <input
@@ -196,7 +196,7 @@ const SkillsAndCertificates = () => {
               />
             </div>
           ))}
-          {form.certifications.length < 3 && (
+          {(data.certifications?.length || 0) < 3 && (
             <button
               type="button"
               onClick={addCertification}
@@ -219,7 +219,7 @@ const SkillsAndCertificates = () => {
         {/* Projects Section */}
         <div>
           <label style={{ ...labelStyle, marginBottom: '12px' }}>Projects</label>
-          {form.projects.map((project, idx) => (
+          {(data.projects || [{ title: '', description: '', url: '' }]).map((project, idx) => (
             <div key={idx} style={cardStyle}>
               <label style={labelStyle}>Project Title</label>
               <input
@@ -255,7 +255,7 @@ const SkillsAndCertificates = () => {
             </div>
           ))}
 
-          {form.projects.length < 3 && (
+          {(data.projects?.length || 0) < 3 && (
             <button
               type="button"
               onClick={addProject}

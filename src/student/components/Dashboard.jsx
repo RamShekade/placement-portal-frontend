@@ -17,6 +17,47 @@ import SocialLinks from "../sections/SocialLinks";
 const Dashboard = () => {
   const [activePage, setActivePage] = useState('profile');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [formData, setFormData] = useState({
+  profile_photo: null,
+  resume: null,
+  ssc_marksheet: null,
+  hsc_marksheet: null,
+  diploma_marksheet: null,
+
+  // Text Fields
+  first_name: "",
+  middle_name: "",
+  last_name: "",
+  gender: "",
+  date_of_birth: "",
+  contact_number_primary: "",
+  contact_number_alternate: "",
+  email: "",
+  aadhaar_number: "",
+  pan_number: "",
+  student_id: "",
+  current_year: "",
+  department: "",
+  year_of_admission: "",
+  expected_graduation_year: "",
+  ssc_percentage: "",
+  ssc_year: "",
+  hsc_percentage: "",
+  hsc_year: "",
+  diploma_percentage: "",
+  diploma_year: "",
+  sem1_cgpa: "", sem2_cgpa: "", sem3_cgpa: "", sem4_cgpa: "",
+  sem5_cgpa: "", sem6_cgpa: "", sem7_cgpa: "", sem8_cgpa: "",
+
+  // JSON fields
+  programming_languages: [],
+  soft_skills: [],
+  certifications: [],
+  projects: [],
+  achievements: [],
+  internships: [],
+});
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -43,23 +84,39 @@ const Dashboard = () => {
   const renderPage = () => {
     switch (activePage) {
       case 'profile':
-        return <Profile />;
+        return <Profile 
+          data={formData}
+  setData={setFormData}
+/>;
       case 'personal':
-        return <PersonalDetails />;
+        return <PersonalDetails 
+         data={formData}
+  setData={setFormData}/>;
         case 'academic':
-          return <AcademicDetails />;
+          return <AcademicDetails
+           data={formData}
+  setData={setFormData} />;
           case 'qualification':
-            return <EducationalQualification />;
+            return <EducationalQualification 
+             data={formData}
+  setData={setFormData}/>;
             case 'skills':
-              return <SkillsAndCertificates />;
+              return <SkillsAndCertificates 
+               data={formData}
+  setData={setFormData}/>;
               case 'internship':
-              return <InternshipAndWorkExperience />;
+              return <InternshipAndWorkExperience
+               data={formData}
+  setData={setFormData} />;
               case 'resume':
-              return <ResumeUpload />;
+              return <ResumeUpload  data={formData}
+  setData={setFormData}/>;
                case 'achievements':
-              return <Achievements />;
+              return <Achievements data={formData}
+  setData={setFormData} />;
               case 'social':
-              return <SocialLinks />;
+              return <SocialLinks  data={formData}
+  setData={setFormData}/>;
       // Add other components as needed
       default:
         return <Profile />;

@@ -1,24 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FaLinkedin, FaGithub, FaCode, FaLaptopCode } from 'react-icons/fa';
 
-const SocialLinks = () => {
-  const [links, setLinks] = useState({
-    linkedin: '',
-    github: '',
-    competitive: '',
-    portfolio: '',
-  });
-
+const SocialLinks = ({ data, setData }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLinks((prev) => ({ ...prev, [name]: value }));
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Social links saved!');
-    console.log('Saved Links:', links);
-  };
+  
+
 
   const formGroupStyle = {
     marginBottom: '25px',
@@ -80,7 +70,7 @@ const SocialLinks = () => {
         Social & Coding Profiles
       </h2>
 
-      <form onSubmit={handleSubmit}>
+      <form >
         {/* LinkedIn */}
         <div style={formGroupStyle}>
           <label style={labelStyle}>LinkedIn</label>
@@ -90,7 +80,7 @@ const SocialLinks = () => {
               type="url"
               name="linkedin"
               placeholder="https://www.linkedin.com/in/your-profile"
-              value={links.linkedin}
+              value={data.linkedin || ''}
               onChange={handleChange}
               style={inputStyle}
             />
@@ -106,7 +96,7 @@ const SocialLinks = () => {
               type="url"
               name="github"
               placeholder="https://github.com/your-username"
-              value={links.github}
+              value={data.github || ''}
               onChange={handleChange}
               style={inputStyle}
             />
@@ -122,7 +112,7 @@ const SocialLinks = () => {
               type="url"
               name="competitive"
               placeholder="https://leetcode.com/your-id"
-              value={links.competitive}
+              value={data.competitive || ''}
               onChange={handleChange}
               style={inputStyle}
             />
@@ -138,14 +128,14 @@ const SocialLinks = () => {
               type="url"
               name="portfolio"
               placeholder="https://your-portfolio.com"
-              value={links.portfolio}
+              value={data.portfolio || ''}
               onChange={handleChange}
               style={inputStyle}
             />
           </div>
         </div>
 
-        {/* Submit Button */}
+        {/* Save Button */}
         <button
           type="submit"
           style={{

@@ -1,21 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const PersonalDetails = () => {
+const PersonalDetails = ({ data, setData }) => {
   const [form, setForm] = useState({
     first: '', middle: '', last: '', gender: '', dob: '',
     contact: '', email: '', contactAlt: '', aadhar: '', pan: ''
   });
 
+  // Pre-fill the form when `data` is available
+ useEffect(() => {
+  if (data) {
+    setForm(data);
+  }
+}, [data]);
+
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+    value = value.trimStart(); // avoid leading whitespace
 
-    // Restrict specific fields
-    if (['first', 'middle', 'last'].includes(name) && /[^a-zA-Z]/.test(value)) return;
-    if (name === 'contact' && /\D/.test(value)) return;
-    if (name === 'contactAlt' && /\D/.test(value)) return;
-    if (name === 'aadhar' && /\D/.test(value)) return;
+    if (['first', 'middle', 'last'].includes(name) && /[^a-zA-Z\s]/.test(value)) return;
+    if (['contact', 'contactAlt'].includes(name) && (!/^\d*$/.test(value) || value.length > 10)) return;
+    if (name === 'aadhar' && (!/^\d*$/.test(value) || value.length >= 12)) return;
 
-    setForm({ ...form, [name]: value });
+    const updatedForm = { ...form, [name]: value };
+    setForm(updatedForm);
+    setData(updatedForm); // update parent state
+  };
+
+  const handlePanChange = (e) => {
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const updatedForm = { ...form, pan: value };
+    setForm(updatedForm);
+    setData(updatedForm); // update parent state
   };
 
   const handleSubmit = (e) => {
@@ -59,8 +75,7 @@ const PersonalDetails = () => {
         borderRadius: '8px 8px 0 0',
         fontSize: '18px',
         marginBottom: '25px',
-        fontWeight: '600',
-        userSelect: 'none'
+        fontWeight: '600'
       }}>
         Personal Details
       </div>
@@ -75,17 +90,17 @@ const PersonalDetails = () => {
       >
         <div>
           <label style={labelStyle}>First Name *</label>
-          <input name="first" maxLength={10} value={form.first} onChange={handleChange} required style={inputStyle} />
+          <input name="first" maxLength={20} value={form.first} onChange={handleChange} required style={inputStyle} />
         </div>
 
         <div>
           <label style={labelStyle}>Middle Name</label>
-          <input name="middle" maxLength={10} value={form.middle} onChange={handleChange} style={inputStyle} />
+          <input name="middle" maxLength={20} value={form.middle} onChange={handleChange} style={inputStyle} />
         </div>
 
         <div>
           <label style={labelStyle}>Last Name *</label>
-          <input name="last" maxLength={10} value={form.last} onChange={handleChange} required style={inputStyle} />
+          <input name="last" maxLength={20} value={form.last} onChange={handleChange} required style={inputStyle} />
         </div>
 
         <div>
@@ -114,12 +129,12 @@ const PersonalDetails = () => {
           <input
             name="contact"
             type="tel"
-            maxLength={10}
             value={form.contact}
             onChange={handleChange}
+            maxLength={10}
             required
             style={inputStyle}
-            title="Enter 10 digit mobile number"
+            placeholder="10 digit mobile number"
           />
         </div>
 
@@ -132,7 +147,7 @@ const PersonalDetails = () => {
             onChange={handleChange}
             required
             style={inputStyle}
-            title="Enter valid email address"
+            placeholder="example@email.com"
           />
         </div>
 
@@ -141,10 +156,11 @@ const PersonalDetails = () => {
           <input
             name="contactAlt"
             type="tel"
-            maxLength={10}
             value={form.contactAlt}
             onChange={handleChange}
+            maxLength={10}
             style={inputStyle}
+            placeholder="Optional 10-digit number"
           />
         </div>
 
@@ -152,12 +168,13 @@ const PersonalDetails = () => {
           <label style={labelStyle}>Aadhar Number *</label>
           <input
             name="aadhar"
-            maxLength={12}
+            type="text"
             value={form.aadhar}
             onChange={handleChange}
+            maxLength={12}
             required
             style={inputStyle}
-            title="Enter 12 digit Aadhar number"
+            placeholder="12-digit Aadhar number"
           />
         </div>
 
@@ -165,14 +182,11 @@ const PersonalDetails = () => {
           <label style={labelStyle}>PAN Card</label>
           <input
             name="pan"
-            maxLength={10}
             value={form.pan}
-            onChange={(e) => {
-              const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-              setForm({ ...form, pan: value });
-            }}
+            maxLength={10}
+            onChange={handlePanChange}
             style={inputStyle}
-            placeholder="eg...ABCDE1234F"
+            placeholder="e.g. ABCDE1234F"
           />
         </div>
 

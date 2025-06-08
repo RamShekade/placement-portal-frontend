@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const ResumeUpload = () => {
+const ResumeUpload = ({ data, setData }) => {
   const [file, setFile] = useState(null);
   const [filename, setFilename] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    // If resume already exists in data, set it
+    if (data?.resumeName) {
+      setFilename(data.resumeName);
+    }
+  }, [data]);
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];
     setError('');
 
     if (selectedFile) {
-      const isValidType = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(selectedFile.type);
+      const isValidType = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ].includes(selectedFile.type);
       const isValidSize = selectedFile.size <= 1024 * 1024; // 1MB
 
       if (!isValidType) {
@@ -25,6 +36,7 @@ const ResumeUpload = () => {
 
       setFile(selectedFile);
       setFilename(selectedFile.name);
+      setData({ ...data, resume: selectedFile, resumeName: selectedFile.name }); // update parent
     }
   };
 
@@ -32,6 +44,7 @@ const ResumeUpload = () => {
     if (file) {
       alert('Resume uploaded successfully.');
       console.log('Uploaded file:', file);
+      // Further upload to backend or storage can be done here
     } else {
       alert('Please select a valid resume.');
     }

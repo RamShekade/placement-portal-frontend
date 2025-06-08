@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const Profile = () => {
+const Profile = ({ data, setData }) => {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (data?.profilePicture) {
+      setPreview(data.profilePicture);
+    }
+  }, [data]);
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -23,8 +29,12 @@ const Profile = () => {
         return;
       }
 
+      const objectUrl = URL.createObjectURL(selectedFile);
       setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
+      setPreview(objectUrl);
+
+      // Pass the actual file to the parent, so it can be sent in the form
+      setData(prev => ({ ...prev, profile_photo: selectedFile }));
     }
   };
 
@@ -32,6 +42,7 @@ const Profile = () => {
     if (file) {
       alert('Photo uploaded successfully.');
       console.log('Uploaded file:', file);
+      // Note: actual upload to backend/cloud storage can be done here
     } else {
       alert('Please select a valid photo.');
     }

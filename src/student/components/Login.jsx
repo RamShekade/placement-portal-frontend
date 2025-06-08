@@ -89,18 +89,17 @@
 // };
 
 // export default Login;
-
-
-
 import React, { useState } from 'react';
 import './Login.css';
 import dmceLogo from '../../assets/images/dmce.png';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login = () => {
   const [studentId, setStudentId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -144,7 +143,7 @@ const Login = () => {
 
       // Redirect based on dummy password status
       if (data.password_updated === 0) {
-        window.location.href = '/pass'; // First login - go to change password
+        window.location.href = '/update-pass'; // First login - go to change password
       } else {
         window.location.href = '/student-dashboard'; // Normal login
       }
@@ -155,6 +154,10 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -176,16 +179,26 @@ const Login = () => {
             maxLength={11}
           />
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="password-field">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button 
+              type="button" 
+              className="password-toggle-btn" 
+              onClick={togglePasswordVisibility}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
           {error && <p className="error">{error}</p>}
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading} className="login-btn">
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
