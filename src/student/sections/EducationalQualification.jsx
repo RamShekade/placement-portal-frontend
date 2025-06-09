@@ -2,23 +2,59 @@
 
 // const EducationalQualification = ({ data, setData }) => {
 //   const handleChange = (e) => {
-//     const { name, value } = e.target;aa
+//     const { name, value } = e.target;
 
-//     if (
-//       name.includes("Percent") &&
-//       value !== "NA" &&
-//       value !== "" &&
-//       !/^\d{0,3}(\.\d{0,2})?$/.test(value)
-//     ) {
-//       return; // allow only valid numeric percentage
+//     // For percentage fields
+//     if (name === 'ssc_percentage' || name === 'hsc_percentage' || name === 'diploma_percentage') {
+//       // Allow empty string or "NA"
+//       if (value === '' || value === 'NA') {
+//         setData({ ...data, [name]: value });
+//         return;
+//       }
+      
+//       // Check if input is a valid number format with up to 3 digits before decimal and 2 after
+//       if (!/^\d{1,3}(\.\d{0,2})?$/.test(value)) {
+//         return;
+//       }
+      
+//       // For percentage, we'll only validate the range if there's a complete value
+//       if (value.indexOf('.') === -1 || value.split('.')[1].length === 2) {
+//         const numValue = parseFloat(value);
+//         if (numValue > 100 || numValue < 35) {
+//           // Don't prevent typing, just show warning
+//           setData({ ...data, [name]: value });
+//           return;
+//         }
+//       }
 //     }
-
-//     if (
-//       name === "cgpa" &&
-//       value !== "" &&
-//       !/^\d{0,1}(\.\d{0,2})?$/.test(value)
-//     ) {
-//       return; // allow CGPA like 8.5, 9.25
+//     // For CGPA field
+//     else if (name === "cgpa") {
+//       if (value === '') {
+//         setData({ ...data, [name]: value });
+//         return;
+//       }
+//       // Allow single digit with up to 2 decimal places
+//       if (!/^\d{1}(\.\d{0,2})?$/.test(value)) {
+//         return;
+//       }
+      
+//       // For CGPA, allow typing but show warning if outside range (4-10)
+//       const numValue = parseFloat(value);
+//       if (numValue > 10 || numValue < 4) {
+//         setData({ ...data, [name]: value });
+//         return;
+//       }
+//     }
+//     // For year fields
+//     else if (name === 'ssc_year' || name === 'hsc_year' || name === 'diploma_year') {
+//       if (value === '') {
+//         setData({ ...data, [name]: value });
+//         return;
+//       }
+//       // Only allow 4-digit numbers for years
+//       if (!/^\d{1,4}$/.test(value)) {
+//         return;
+//       }
 //     }
 
 //     setData({ ...data, [name]: value });
@@ -27,7 +63,40 @@
 //   const handleSubmit = (e) => {
 //     e.preventDefault();
 
-//     const has12th = data.hsce_percentage || data.hsc_year;
+//     // Validate all fields before submission
+//     if (data.ssc_percentage && data.ssc_percentage !== 'NA') {
+//       const sscPercent = parseFloat(data.ssc_percentage);
+//       if (sscPercent < 35 || sscPercent > 100) {
+//         alert('10th percentage must be between 35 and 100');
+//         return;
+//       }
+//     }
+
+//     if (data.hsc_percentage && data.hsc_percentage !== 'NA') {
+//       const hscPercent = parseFloat(data.hsc_percentage);
+//       if (hscPercent < 35 || hscPercent > 100) {
+//         alert('12th percentage must be between 35 and 100');
+//         return;
+//       }
+//     }
+
+//     if (data.diploma_percentage && data.diploma_percentage !== 'NA') {
+//       const diplomaPercent = parseFloat(data.diploma_percentage);
+//       if (diplomaPercent < 35 || diplomaPercent > 100) {
+//         alert('Diploma percentage must be between 35 and 100');
+//         return;
+//       }
+//     }
+
+//     if (data.cgpa) {
+//       const cgpaValue = parseFloat(data.cgpa);
+//       if (cgpaValue < 4 || cgpaValue > 10) {
+//         alert('CGPA must be between 4 and 10');
+//         return;
+//       }
+//     }
+
+//     const has12th = data.hsc_percentage || data.hsc_year;
 //     const hasDiploma = data.diploma_percentage || data.diploma_year;
 
 //     if (!has12th && !hasDiploma) {
@@ -40,27 +109,26 @@
 //   };
 
 //   const handleFileChange = (e, field) => {
-//   const selectedFile = e.target.files[0];
-
-//   if (!selectedFile) return;
-
-//   const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-//   const isValidType = validTypes.includes(selectedFile.type);
-//   const isValidSize = selectedFile.size <= 1024 * 1024; // Max 1MB (change as per your limit)
-
-//   if (!isValidType) {
-//     alert('Invalid file type. Only PDF, JPG, JPEG, PNG allowed.');
-//     return;
-//   }
-
-//   if (!isValidSize) {
-//     alert('File too large. Max size allowed is 1MB.');
-//     return;
-//   }
-
-//   setData(prev => ({ ...prev, [field]: selectedFile }));
-// };
-
+//     const selectedFile = e.target.files[0];
+  
+//     if (!selectedFile) return;
+  
+//     const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+//     const isValidType = validTypes.includes(selectedFile.type);
+//     const isValidSize = selectedFile.size <= 1024 * 1024; // Max 1MB (change as per your limit)
+  
+//     if (!isValidType) {
+//       alert('Invalid file type. Only PDF, JPG, JPEG, PNG allowed.');
+//       return;
+//     }
+  
+//     if (!isValidSize) {
+//       alert('File too large. Max size allowed is 1MB.');
+//       return;
+//     }
+  
+//     setData(prev => ({ ...prev, [field]: selectedFile }));
+//   };
 
 //   const inputStyle = {
 //     padding: '10px',
@@ -112,7 +180,7 @@
 //       </div>
 
 //       <div style={noteStyle}>
-//         <strong>⚠️ Note:</strong> If marks are not available, type <strong>"NA"</strong>.
+//         <strong>⚠️ Note:</strong> If marks are not available, type <strong>"NA"</strong>. Percentage must be between 35-100. CGPA must be between 4-10.
 //       </div>
 
 //       <form onSubmit={handleSubmit} style={{
@@ -120,41 +188,128 @@
 //         gap: '20px',
 //         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
 //       }}>
-//         {/* 10th */}
-//         <div style={sectionHeaderStyle}>10th Details</div>
-//         <input name="ssc_percentage" placeholder="10th Percentage (eg - 87)" value={data.tenthPercent} onChange={handleChange} style={inputStyle} required />
-//         <input name="ssc_year" placeholder="Year of Passing (eg - 2020)" value={data.tenthYear} onChange={handleChange} style={inputStyle} required />
-//         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'ssc_marksheet')} />
+//          {/* 10th */}
+//          <div style={sectionHeaderStyle}>10th Details</div>
+//          <div style={{ position: 'relative' }}>
+//            <input 
+//              name="ssc_percentage" 
+//              placeholder="10th Percentage (35-100)" 
+//              value={data.ssc_percentage || ''}
+//              onChange={handleChange} 
+//              style={inputStyle} 
+//              required 
+//            />
+//            {data.ssc_percentage && data.ssc_percentage !== 'NA' && parseFloat(data.ssc_percentage) && (parseFloat(data.ssc_percentage) < 35 || parseFloat(data.ssc_percentage) > 100) && (
+//              <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+//                Percentage must be between 35-100
+//              </div>
+//            )}
+//          </div>
+//          <div style={{ position: 'relative' }}>
+//            <input 
+//              name="ssc_year" 
+//              placeholder="Year of Passing (eg - 2020)" 
+//              value={data.ssc_year || ''}
+//              onChange={handleChange} 
+//              style={inputStyle} 
+//              required 
+//            />
+//            {data.ssc_year && data.ssc_year.length === 4 && (parseInt(data.ssc_year) < 1950 || parseInt(data.ssc_year) > new Date().getFullYear()) && (
+//              <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+//                Enter a valid year (1950-{new Date().getFullYear()})
+//              </div>
+//            )}
+//          </div>
+//          <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'ssc_marksheet')} />
 
-//         {/* 12th */}
-//         <div style={sectionHeaderStyle}>12th Details</div>
-//         <input name="hsc_percentage" placeholder="12th Percentage (eg - 67)" value={data.twelfthPercent} onCfhange={handleChange} style={inputStyle} />
-//         <input name="hsc_year" placeholder="Year of Passing (eg - 2024)" value={data.twelfthYear} onChange={handleChange} style={inputStyle} />
-//         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'hsc_marksheet')} />
+//          {/* 12th */}
+//          <div style={sectionHeaderStyle}>12th Details</div>
+//          <div style={{ position: 'relative' }}>
+//            <input 
+//              name="hsc_percentage" 
+//              placeholder="12th Percentage (35-100)" 
+//              value={data.hsc_percentage || ''}
+//              onChange={handleChange} 
+//              style={inputStyle} 
+//            />
+//            {data.hsc_percentage && data.hsc_percentage !== 'NA' && parseFloat(data.hsc_percentage) && (parseFloat(data.hsc_percentage) < 35 || parseFloat(data.hsc_percentage) > 100) && (
+//              <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+//                Percentage must be between 35-100
+//              </div>
+//            )}
+//          </div>
+//          <div style={{ position: 'relative' }}>
+//            <input 
+//              name="hsc_year" 
+//              placeholder="Year of Passing (eg - 2024)" 
+//              value={data.hsc_year || ''}
+//              onChange={handleChange} 
+//              style={inputStyle} 
+//            />
+//            {data.hsc_year && data.hsc_year.length === 4 && (parseInt(data.hsc_year) < 1950 || parseInt(data.hsc_year) > new Date().getFullYear()) && (
+//              <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+//                Enter a valid year (1950-{new Date().getFullYear()})
+//              </div>
+//            )}
+//          </div>
+//          <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'hsc_marksheet')} />
 
-//         {/* Diploma */}
-//         <div style={sectionHeaderStyle}>Diploma Details</div>
-//         <input name="diploma_percentage" placeholder="Diploma Percentage" value={data.diplomaPercent} onChange={handleChange} style={inputStyle} />
-//         <input name="diploma_year" placeholder="Year of Passing" value={data.diplomaYear} onChange={handleChange} style={inputStyle} />
-//         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'diploma_marksheet')}/>
+//          {/* Diploma */}
+//          <div style={sectionHeaderStyle}>Diploma Details</div>
+//          <div style={{ position: 'relative' }}>
+//            <input 
+//              name="diploma_percentage" 
+//              placeholder="Diploma Percentage (35-100)" 
+//              value={data.diploma_percentage || ''}
+//              onChange={handleChange} 
+//              style={inputStyle} 
+//            />
+//            {data.diploma_percentage && data.diploma_percentage !== 'NA' && parseFloat(data.diploma_percentage) && (parseFloat(data.diploma_percentage) < 35 || parseFloat(data.diploma_percentage) > 100) && (
+//              <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+//                Percentage must be between 35-100
+//              </div>
+//            )}
+//          </div>
+//          <div style={{ position: 'relative' }}>
+//            <input 
+//              name="diploma_year" 
+//              placeholder="Year of Passing" 
+//              value={data.diploma_year || ''}
+//              onChange={handleChange} 
+//              style={inputStyle} 
+//            />
+//            {data.diploma_year && data.diploma_year.length === 4 && (parseInt(data.diploma_year) < 1950 || parseInt(data.diploma_year) > new Date().getFullYear()) && (
+//              <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+//                Enter a valid year (1950-{new Date().getFullYear()})
+//              </div>
+//            )}
+//          </div>
+//          <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'diploma_marksheet')}/>
 
 //         {/* Last Passed Semester */}
 //         <div style={sectionHeaderStyle}>Last Passed Semester</div>
-//         <select name="last_semester" value={data.lastSemester || ''} onChange={handleChange} style={inputStyle} required>
+//         <select name="last_semester" value={data.last_semester || ''} onChange={handleChange} style={inputStyle} required>
 //           <option value="">Select Semester</option>
 //           {semOptions.map((sem, idx) => (
 //             <option key={idx} value={sem}>{sem}</option>
 //           ))}
 //         </select>
 
-//         <input
-//           name="cgpa"
-//           placeholder="Enter CGPA (eg - 8.98)"
-//           value={data.cgpa || ''}
-//           onChange={handleChange}
-//           style={inputStyle}
-//           required
-//         />
+//         <div style={{ position: 'relative' }}>
+//           <input
+//             name="cgpa"
+//             placeholder="Enter CGPA (4-10)"
+//             value={data.cgpa || ''}
+//             onChange={handleChange}
+//             style={inputStyle}
+//             required
+//           />
+//           {data.cgpa && parseFloat(data.cgpa) && (parseFloat(data.cgpa) < 4 || parseFloat(data.cgpa) > 10) && (
+//             <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+//               CGPA must be between 4-10
+//             </div>
+//           )}
+//         </div>
 
 //         {/* Live KT */}
 //         <div style={{ gridColumn: '1 / -1' }}>
@@ -225,7 +380,14 @@
 //         </div>
 
 //         {/* Submit */}
-//         <div style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
+//         <div style={{ gridColumn: '1 / -1', textAlign: 'center', marginTop: '15px' }}>
+//           <div style={{ 
+//             color: '#666', 
+//             fontSize: '12px', 
+//             marginBottom: '10px',
+//             fontStyle: 'italic'
+//           }}>
+//           </div>
 //           <button type="submit" style={{
 //             padding: '12px 30px',
 //             backgroundColor: '#1e1e3f',
@@ -233,6 +395,7 @@
 //             border: 'none',
 //             borderRadius: '6px',
 //             fontWeight: 'bold',
+//             cursor: 'pointer',
 //           }}>
 //             Submit
 //           </button>
@@ -246,28 +409,63 @@
 
 
 
-
 import React from 'react';
 
 const EducationalQualification = ({ data, setData }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (
-      name.includes("Percent") &&
-      value !== "NA" &&
-      value !== "" &&
-      !/^\d{0,3}(\.\d{0,2})?$/.test(value)
-    ) {
-      return; // allow only valid numeric percentage
+    // For percentage fields
+    if (name === 'ssc_percentage' || name === 'hsc_percentage' || name === 'diploma_percentage') {
+      // Allow empty string or "NA"
+      if (value === '' || value === 'NA') {
+        setData({ ...data, [name]: value });
+        return;
+      }
+      
+      // Check if input is a valid number format with up to 3 digits before decimal and 2 after
+      if (!/^\d{1,3}(\.\d{0,2})?$/.test(value)) {
+        return;
+      }
+      
+      // For percentage, we'll only validate the range if there's a complete value
+      if (value.indexOf('.') === -1 || value.split('.')[1].length === 2) {
+        const numValue = parseFloat(value);
+        if (numValue > 100 || numValue < 35) {
+          // Don't prevent typing, just show warning
+          setData({ ...data, [name]: value });
+          return;
+        }
+      }
     }
-
-    if (
-      name === "cgpa" &&
-      value !== "" &&
-      !/^\d{0,1}(\.\d{0,2})?$/.test(value)
-    ) {
-      return; // allow CGPA like 8.5, 9.25
+    // For CGPA field
+    else if (name === "cgpa") {
+      if (value === '') {
+        setData({ ...data, [name]: value });
+        return;
+      }
+      // Allow single digit with up to 2 decimal places
+      if (!/^\d{1}(\.\d{0,2})?$/.test(value)) {
+        return;
+      }
+      
+      // For CGPA, allow typing but show warning if outside range (4-10)
+      const numValue = parseFloat(value);
+      if (numValue > 10 || numValue < 4) {
+        setData({ ...data, [name]: value });
+        return;
+      }
+    }
+    // For year fields
+    else if (name === 'ssc_year' || name === 'hsc_year' || name === 'diploma_year') {
+      if (value === '') {
+        setData({ ...data, [name]: value });
+        return;
+      }
+      // Only allow 4-digit numbers for years
+      if (!/^\d{1,4}$/.test(value)) {
+        return;
+      }
     }
 
     setData({ ...data, [name]: value });
@@ -276,8 +474,41 @@ const EducationalQualification = ({ data, setData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const has12th = data.twelfthPercent || data.twelfthYear;
-    const hasDiploma = data.diplomaPercent || data.diplomaYear;
+    // Validate all fields before submission
+    if (data.ssc_percentage && data.ssc_percentage !== 'NA') {
+      const sscPercent = parseFloat(data.ssc_percentage);
+      if (sscPercent < 35 || sscPercent > 100) {
+        alert('10th percentage must be between 35 and 100');
+        return;
+      }
+    }
+
+    if (data.hsc_percentage && data.hsc_percentage !== 'NA') {
+      const hscPercent = parseFloat(data.hsc_percentage);
+      if (hscPercent < 35 || hscPercent > 100) {
+        alert('12th percentage must be between 35 and 100');
+        return;
+      }
+    }
+
+    if (data.diploma_percentage && data.diploma_percentage !== 'NA') {
+      const diplomaPercent = parseFloat(data.diploma_percentage);
+      if (diplomaPercent < 35 || diplomaPercent > 100) {
+        alert('Diploma percentage must be between 35 and 100');
+        return;
+      }
+    }
+
+    if (data.cgpa) {
+      const cgpaValue = parseFloat(data.cgpa);
+      if (cgpaValue < 4 || cgpaValue > 10) {
+        alert('CGPA must be between 4 and 10');
+        return;
+      }
+    }
+
+    const has12th = data.hsc_percentage || data.hsc_year;
+    const hasDiploma = data.diploma_percentage || data.diploma_year;
 
     if (!has12th && !hasDiploma) {
       alert('Please fill either 12th or Diploma details.');
@@ -289,26 +520,26 @@ const EducationalQualification = ({ data, setData }) => {
   };
 
   const handleFileChange = (e, field) => {
-  const selectedFile = e.target.files[0];
-
-  if (!selectedFile) return;
-
-  const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-  const isValidType = validTypes.includes(selectedFile.type);
-  const isValidSize = selectedFile.size <= 1024 * 1024; // Max 1MB (change as per your limit)
-
-  if (!isValidType) {
-    alert('Invalid file type. Only PDF, JPG, JPEG, PNG allowed.');
-    return;
-  }
-
-  if (!isValidSize) {
-    alert('File too large. Max size allowed is 1MB.');
-    return;
-  }
-
-  setData(prev => ({ ...prev, [field]: selectedFile }));
-};
+    const selectedFile = e.target.files[0];
+  
+    if (!selectedFile) return;
+  
+    const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    const isValidType = validTypes.includes(selectedFile.type);
+    const isValidSize = selectedFile.size <= 1024 * 1024; // Max 1MB (change as per your limit)
+  
+    if (!isValidType) {
+      alert('Invalid file type. Only PDF, JPG, JPEG, PNG allowed.');
+      return;
+    }
+  
+    if (!isValidSize) {
+      alert('File too large. Max size allowed is 1MB.');
+      return;
+    }
+  
+    setData(prev => ({ ...prev, [field]: selectedFile }));
+  };
 
   const inputStyle = {
     padding: '10px',
@@ -360,7 +591,7 @@ const EducationalQualification = ({ data, setData }) => {
       </div>
 
       <div style={noteStyle}>
-        <strong>⚠️ Note:</strong> If marks are not available, type <strong>"NA"</strong>.
+        <strong>⚠️ Note:</strong> If marks are not available, type <strong>"NA"</strong>. Percentage must be between 35-100. CGPA must be between 4-10.
       </div>
 
       <form onSubmit={handleSubmit} style={{
@@ -368,22 +599,103 @@ const EducationalQualification = ({ data, setData }) => {
         gap: '20px',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
       }}>
-                 {/* 10th */}
+         {/* 10th */}
          <div style={sectionHeaderStyle}>10th Details</div>
-         <input name="ssc_percentage" placeholder="10th Percentage (eg - 87)" value={data.tenthPercent} onChange={handleChange} style={inputStyle} required />
-         <input name="ssc_year" placeholder="Year of Passing (eg - 2020)" value={data.tenthYear} onChange={handleChange} style={inputStyle} required />
-         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'ssc_marksheet')} />
+         <div style={{ position: 'relative' }}>
+           <input 
+             name="ssc_percentage" 
+             placeholder="10th Percentage (35-100)" 
+             value={data.ssc_percentage || ''}
+             onChange={handleChange} 
+             style={inputStyle} 
+             required 
+           />
+           {data.ssc_percentage && data.ssc_percentage !== 'NA' && parseFloat(data.ssc_percentage) && (parseFloat(data.ssc_percentage) < 35 || parseFloat(data.ssc_percentage) > 100) && (
+             <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+               Percentage must be between 35-100
+             </div>
+           )}
+         </div>
+         <div style={{ position: 'relative' }}>
+           <input 
+             name="ssc_year" 
+             placeholder="Year of Passing (eg - 2020)" 
+             value={data.ssc_year || ''}
+             onChange={handleChange} 
+             style={inputStyle} 
+             required 
+           />
+           {data.ssc_year && data.ssc_year.length === 4 && (parseInt(data.ssc_year) < 1950 || parseInt(data.ssc_year) > new Date().getFullYear()) && (
+             <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+               Enter a valid year (1950-{new Date().getFullYear()})
+             </div>
+           )}
+         </div>
+         <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'ssc_marksheet')} />
 
          {/* 12th */}
          <div style={sectionHeaderStyle}>12th Details</div>
-         <input name="hsc_percentage" placeholder="12th Percentage (eg - 67)" value={data.twelfthPercent} onCfhange={handleChange} style={inputStyle} />
-         <input name="hsc_year" placeholder="Year of Passing (eg - 2024)" value={data.twelfthYear} onChange={handleChange} style={inputStyle} />
-         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'hsc_marksheet')} />
+         <div style={{ position: 'relative' }}>
+           <input 
+             name="hsc_percentage" 
+             placeholder="12th Percentage (35-100)" 
+             value={data.hsc_percentage || ''}
+             onChange={handleChange} 
+             style={inputStyle} 
+           />
+           {data.hsc_percentage && data.hsc_percentage !== 'NA' && parseFloat(data.hsc_percentage) && (parseFloat(data.hsc_percentage) < 35 || parseFloat(data.hsc_percentage) > 100) && (
+             <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+               Percentage must be between 35-100
+             </div>
+           )}
+         </div>
+         <div style={{ position: 'relative' }}>
+           <input 
+             name="hsc_year" 
+             placeholder="Year of Passing (eg - 2024)" 
+             value={data.hsc_year || ''}
+             onChange={handleChange} 
+             style={inputStyle} 
+           />
+           {data.hsc_year && data.hsc_year.length === 4 && (parseInt(data.hsc_year) < 1950 || parseInt(data.hsc_year) > new Date().getFullYear()) && (
+             <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+               Enter a valid year (1950-{new Date().getFullYear()})
+             </div>
+           )}
+         </div>
+         <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'hsc_marksheet')} />
 
          {/* Diploma */}
          <div style={sectionHeaderStyle}>Diploma Details</div>
-           <input name="diploma_percentage" placeholder="Diploma Percentage" value={data.diplomaPercent} onChange={handleChange} style={inputStyle} />         <input name="diploma_year" placeholder="Year of Passing" value={data.diplomaYear} onChange={handleChange} style={inputStyle} />
-         <input type="file" accept=".pdf,.jpg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'diploma_marksheet')}/>
+         <div style={{ position: 'relative' }}>
+           <input 
+             name="diploma_percentage" 
+             placeholder="Diploma Percentage (35-100)" 
+             value={data.diploma_percentage || ''}
+             onChange={handleChange} 
+             style={inputStyle} 
+           />
+           {data.diploma_percentage && data.diploma_percentage !== 'NA' && parseFloat(data.diploma_percentage) && (parseFloat(data.diploma_percentage) < 35 || parseFloat(data.diploma_percentage) > 100) && (
+             <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+               Percentage must be between 35-100
+             </div>
+           )}
+         </div>
+         <div style={{ position: 'relative' }}>
+           <input 
+             name="diploma_year" 
+             placeholder="Year of Passing" 
+             value={data.diploma_year || ''}
+             onChange={handleChange} 
+             style={inputStyle} 
+           />
+           {data.diploma_year && data.diploma_year.length === 4 && (parseInt(data.diploma_year) < 1950 || parseInt(data.diploma_year) > new Date().getFullYear()) && (
+             <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+               Enter a valid year (1950-{new Date().getFullYear()})
+             </div>
+           )}
+         </div>
+         <input type="file" accept=".pdf,.jpg,.jpeg,.png" style={inputStyle} onChange={(e) => handleFileChange(e, 'diploma_marksheet')}/>
 
         {/* Last Passed Semester */}
         <div style={sectionHeaderStyle}>Last Passed Semester</div>
@@ -394,14 +706,21 @@ const EducationalQualification = ({ data, setData }) => {
           ))}
         </select>
 
-        <input
-          name="cgpa"
-          placeholder="Enter CGPA (eg - 8.98)"
-          value={data.cgpa || ''}
-          onChange={handleChange}
-          style={inputStyle}
-          required
-        />
+        <div style={{ position: 'relative' }}>
+          <input
+            name="cgpa"
+            placeholder="Enter CGPA (4-10)"
+            value={data.cgpa || ''}
+            onChange={handleChange}
+            style={inputStyle}
+            required
+          />
+          {data.cgpa && parseFloat(data.cgpa) && (parseFloat(data.cgpa) < 4 || parseFloat(data.cgpa) > 10) && (
+            <div style={{ color: 'red', fontSize: '12px', position: 'absolute', top: '100%', left: '0' }}>
+              CGPA must be between 4-10
+            </div>
+          )}
+        </div>
 
         {/* Live KT */}
         <div style={{ gridColumn: '1 / -1' }}>
@@ -472,7 +791,14 @@ const EducationalQualification = ({ data, setData }) => {
         </div>
 
         {/* Submit */}
-        <div style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
+        <div style={{ gridColumn: '1 / -1', textAlign: 'center', marginTop: '15px' }}>
+          <div style={{ 
+            color: '#666', 
+            fontSize: '12px', 
+            marginBottom: '10px',
+            fontStyle: 'italic'
+          }}>
+          </div>
           <button type="submit" style={{
             padding: '12px 30px',
             backgroundColor: '#1e1e3f',
@@ -480,6 +806,7 @@ const EducationalQualification = ({ data, setData }) => {
             border: 'none',
             borderRadius: '6px',
             fontWeight: 'bold',
+            cursor: 'pointer',
           }}>
             Submit
           </button>

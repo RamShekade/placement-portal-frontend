@@ -6,10 +6,19 @@ const Profile = ({ data, setData }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (data?.profilePicture) {
-      setPreview(data.profilePicture);
-    }
-  }, [data]);
+  if (data?.profile_photo instanceof File) {
+    const objectUrl = URL.createObjectURL(data.profile_photo);
+    setPreview(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl); // cleanup
+  }
+
+  // If it's a URL string (e.g., from DB), set it directly
+  if (typeof data?.profile_photo === 'string') {
+    setPreview(data.profile_photo);
+  }
+}, [data?.profile_photo]);
+
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];

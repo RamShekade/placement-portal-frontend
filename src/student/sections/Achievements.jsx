@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 
 const Achievements = ({data, setData}) => {
-  const [achievements, setAchievements] = useState([
-    { title: '', description: '', media: '' }
-  ]);
+  const achievements = data.achievements || [{ title: '', description: '', media: '' }];
 
   const handleChange = (index, e) => {
-  const { name, value } = e.target;
-  const updated = [...achievements];
-  updated[index][name] = value;
-  setAchievements(updated);
-  setData(prev => ({ ...prev, achievements: updated })); // ✅ update parent state
-};
+    const { name, value } = e.target;
+    const updated = [...achievements];
+    updated[index] = { ...updated[index], [name]: value };
+    setData((prev) => ({ ...prev, achievements: updated }));
+  };
 
   const handleAdd = () => {
     if (achievements.length < 5) {
-      setAchievements([...achievements, { title: '', description: '', media: '' }]);
+      setData((prev) => ({
+        ...prev,
+        achievements: [...achievements, { title: '', description: '', media: '' }],
+      }));
     }
   };
+
 
   const handleSubmit = async () => {
   const token = localStorage.getItem('token');
@@ -39,7 +40,7 @@ const Achievements = ({data, setData}) => {
   formData.append('email', data.email);
   formData.append('aadhaar_number', data.aadhaar_number);
   formData.append('pan_number', data.pan_number);
-  formData.append('student_id_number', data.student_id_number);
+  formData.append('student_id_number', data.student_id);
   formData.append('current_year', data.current_year);
   formData.append('department', data.department);
   formData.append('year_of_admission', data.year_of_admission);
@@ -65,7 +66,7 @@ const Achievements = ({data, setData}) => {
   formData.append('certifications', JSON.stringify(data.certifications || []));
   formData.append('projects', JSON.stringify(data.projects || []));
   formData.append('achievements', JSON.stringify(data.achievements || []));
-  formData.append('internships', JSON.stringify(data.internships || []));
+  formData.append('internships', JSON.stringify(data.experiences || []));
 
   // File fields (ensure they are File objects from input[type="file"])
   if (data.profile_photo instanceof File) {
@@ -115,47 +116,57 @@ for (let pair of formData.entries()) {
     alert('❌ Error occurred during profile submission.');
   }
 };
-  return (
-    <div style={{
-      background: '#fff',
-      padding: '30px',
-      borderRadius: '12px',
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
-      border: '1px solid #ccc',
-      maxWidth: '700px',
-      width: '100%',
-      margin: '30px auto',
-      maxHeight: 'calc(100vh - 100px)',
-      overflowY: 'auto'
-    }}>
-      <div style={{
-        backgroundColor: '#1e1e3f',
-        color: 'white',
-        padding: '12px 20px',
-        borderRadius: '8px 8px 0 0',
-        fontSize: '18px',
-        marginBottom: '25px',
-        textAlign: 'center'
-      }}>
+   return (
+    <div
+      style={{
+        background: '#fff',
+        padding: '30px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #ccc',
+        maxWidth: '700px',
+        width: '100%',
+        margin: '30px auto',
+        maxHeight: 'calc(100vh - 100px)',
+        overflowY: 'auto',
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: '#1e1e3f',
+          color: 'white',
+          padding: '12px 20px',
+          borderRadius: '8px 8px 0 0',
+          fontSize: '18px',
+          marginBottom: '25px',
+          textAlign: 'center',
+        }}
+      >
         Achievements & Extra Curricular Activities
       </div>
 
       {achievements.map((item, index) => (
-        <div key={index} style={{
-          marginBottom: '25px',
-          paddingBottom: '20px',
-          borderBottom: index !== achievements.length - 1 ? '1px solid #eee' : 'none'
-        }}>
-          <h4 style={{
-            color: '#1e3a8a',
-            fontSize: '17px',
-            marginBottom: '15px'
-          }}>
+        <div
+          key={index}
+          style={{
+            marginBottom: '25px',
+            paddingBottom: '20px',
+            borderBottom: index !== achievements.length - 1 ? '1px solid #eee' : 'none',
+          }}
+        >
+          <h4
+            style={{
+              color: '#1e3a8a',
+              fontSize: '17px',
+              marginBottom: '15px',
+            }}
+          >
             Achievement {index + 1}
           </h4>
 
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontWeight: 'bold', color: '#000' }}>Title *</label><br />
+            <label style={{ fontWeight: 'bold', color: '#000' }}>Title *</label>
+            <br />
             <input
               type="text"
               name="title"
@@ -169,14 +180,15 @@ for (let pair of formData.entries()) {
                 border: '1px solid #ccc',
                 marginTop: '6px',
                 backgroundColor: '#fff',
-                color: '#000'
+                color: '#000',
               }}
               required
             />
           </div>
 
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontWeight: 'bold', color: '#000' }}>Description *</label><br />
+            <label style={{ fontWeight: 'bold', color: '#000' }}>Description *</label>
+            <br />
             <textarea
               name="description"
               value={item.description}
@@ -191,14 +203,15 @@ for (let pair of formData.entries()) {
                 marginTop: '6px',
                 backgroundColor: '#fff',
                 color: '#000',
-                resize: 'vertical'
+                resize: 'vertical',
               }}
               required
             ></textarea>
           </div>
 
           <div>
-            <label style={{ fontWeight: 'bold', color: '#000' }}>Media URL (optional)</label><br />
+            <label style={{ fontWeight: 'bold', color: '#000' }}>Media URL (optional)</label>
+            <br />
             <input
               type="url"
               name="media"
@@ -212,7 +225,7 @@ for (let pair of formData.entries()) {
                 border: '1px solid #ccc',
                 marginTop: '6px',
                 backgroundColor: '#fff',
-                color: '#000'
+                color: '#000',
               }}
             />
           </div>
@@ -222,9 +235,9 @@ for (let pair of formData.entries()) {
       <div style={{ textAlign: 'center', marginTop: '10px' }}>
         <button
           onClick={handleAdd}
-          disabled={data.achievements.length >= 5}
+          disabled={achievements.length >= 5}
           style={{
-            backgroundColor: data.achievements.length < 5 ? '#1e3a8a' : '#aaa',
+            backgroundColor: achievements.length < 5 ? '#1e3a8a' : '#aaa',
             color: 'white',
             padding: '10px 20px',
             borderRadius: '10px',
@@ -232,12 +245,14 @@ for (let pair of formData.entries()) {
             fontWeight: 'bold',
             fontSize: '15px',
             marginRight: '12px',
-            cursor: data.achievements.length < 5 ? 'pointer' : 'not-allowed'
+            cursor: achievements.length < 5 ? 'pointer' : 'not-allowed',
           }}
+          type="button"
         >
           Add Achievement
         </button>
 
+        {/* Submit button should ideally be handled by parent, but keeping it here if you want */}
         <button
           onClick={handleSubmit}
           style={{
@@ -248,8 +263,9 @@ for (let pair of formData.entries()) {
             border: 'none',
             fontWeight: 'bold',
             fontSize: '15px',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
+          type="button"
         >
           Save All
         </button>

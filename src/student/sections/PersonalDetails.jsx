@@ -90,24 +90,24 @@ const PersonalDetails = ({ data, setData }) => {
       >
         <div>
           <label style={labelStyle}>First Name *</label>
-          <input name="first_name" maxLength={20} value={form.first} onChange={handleChange} required style={inputStyle} />
+          <input name="first_name" maxLength={20} value={data.first_name} onChange={handleChange} required style={inputStyle} />
         </div>
 
         <div>
           <label style={labelStyle}>Middle Name</label>
-          <input name="middle_name" maxLength={20} value={form.middle} onChange={handleChange} style={inputStyle} />
+          <input name="middle_name" maxLength={20} value={data.middle_name} onChange={handleChange} style={inputStyle} />
         </div>
 
         <div>
           <label style={labelStyle}>Last Name *</label>
-          <input name="last_name" maxLength={20} value={form.last} onChange={handleChange} required style={inputStyle} />
+          <input name="last_name" maxLength={20} value={data.last_name} onChange={handleChange} required style={inputStyle} />
         </div>
 
         <div>
           <label style={labelStyle}>Gender *</label>
           <select
             name="gender"
-            value={form.gender}
+            value={data.gender}
             onChange={handleChange}
             required
             style={{ ...inputStyle, color: form.gender ? '#000' : '#999' }}
@@ -121,7 +121,7 @@ const PersonalDetails = ({ data, setData }) => {
 
         <div>
           <label style={labelStyle}>Date of Birth *</label>
-          <input type="date" name="date_of_birth" value={form.date_of_birth} onChange={handleChange} required style={inputStyle} />
+          <input type="date" name="date_of_birth" value={data.date_of_birth} onChange={handleChange} required style={inputStyle} />
         </div>
 
         <div>
@@ -129,7 +129,7 @@ const PersonalDetails = ({ data, setData }) => {
           <input
             name="contact_number_primary"
             type="tel"
-            value={form.contact}
+            value={data.contact_number_primary}
             onChange={handleChange}
             maxLength={10}
             required
@@ -143,7 +143,7 @@ const PersonalDetails = ({ data, setData }) => {
           <input
             name="email"
             type="email"
-            value={form.email}
+            value={data.email}
             onChange={handleChange}
             required
             style={inputStyle}
@@ -156,7 +156,7 @@ const PersonalDetails = ({ data, setData }) => {
           <input
             name="contact_number_alternate"
             type="tel"
-            value={form.contactAlt}
+            value={data.contact_number_alternate}
             onChange={handleChange}
             maxLength={10}
             style={inputStyle}
@@ -169,7 +169,7 @@ const PersonalDetails = ({ data, setData }) => {
           <input
             name="aadhaar_number"
             type="text"
-            value={form.aadhar}
+            value={data.aadhaar_number}
             onChange={handleChange}
             maxLength={12}
             required
@@ -181,8 +181,8 @@ const PersonalDetails = ({ data, setData }) => {
         <div>
           <label style={labelStyle}>PAN Card</label>
           <input
-            name="pan"
-            value={form.pan}
+            name="pan_number"
+            value={data.pan_number}
             maxLength={10}
             onChange={handlePanChange}
             style={inputStyle}

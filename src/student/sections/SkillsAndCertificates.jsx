@@ -95,25 +95,28 @@ const SkillsAndCertificates = ({ data, setData }) => {
     skills: []
   });
   
-  // Initialize form data with empty strings
+  // Only initialize missing fields without overriding existing parent data
   useEffect(() => {
-    const initialData = { ...data };
-    
-    if (!initialData.programming_languages) {
-      initialData.programming_languages = '';
-    }
-    if (!initialData.skills) {
-      initialData.skills = '';
-    }
-    if (!initialData.certifications) {
-      initialData.certifications = [{ name: '', link: '' }];
-    }
-    if (!initialData.projects) {
-      initialData.projects = [{ title: '', description: '', url: '' }];
-    }
-    
-    setData(initialData);
-  }, []);
+    setData(prevData => {
+      const updatedData = { ...prevData };
+      
+      // Only set defaults if the fields don't exist or are null/undefined
+      if (updatedData.programming_languages === undefined || updatedData.programming_languages === null) {
+        updatedData.programming_languages = '';
+      }
+      if (updatedData.skills === undefined || updatedData.skills === null) {
+        updatedData.skills = '';
+      }
+      if (!updatedData.certifications || !Array.isArray(updatedData.certifications)) {
+        updatedData.certifications = [{ name: '', link: '' }];
+      }
+      if (!updatedData.projects || !Array.isArray(updatedData.projects)) {
+        updatedData.projects = [{ title: '', description: '', url: '' }];
+      }
+      
+      return updatedData;
+    });
+  }, []); // Empty dependency array to run only once
 
   const getCurrentInputValue = (field) => {
     const value = data[field];
@@ -177,7 +180,10 @@ const SkillsAndCertificates = ({ data, setData }) => {
   };
 
   const handleCertificationChange = (index, e) => {
-    const certs = [...(data.certifications || [{ name: '', link: '' }])];
+    const certs = [...(data.certifications || [])];
+    if (!certs[index]) {
+      certs[index] = { name: '', link: '' };
+    }
     certs[index][e.target.name] = e.target.value;
     setData(prev => ({ ...prev, certifications: certs }));
   };
@@ -193,7 +199,10 @@ const SkillsAndCertificates = ({ data, setData }) => {
   };
 
   const handleProjectChange = (index, e) => {
-    const projects = [...(data.projects || [{ title: '', description: '', url: '' }])];
+    const projects = [...(data.projects || [])];
+    if (!projects[index]) {
+      projects[index] = { title: '', description: '', url: '' };
+    }
     projects[index][e.target.name] = e.target.value;
     setData(prev => ({ ...prev, projects }));
   };
@@ -373,9 +382,7 @@ const SkillsAndCertificates = ({ data, setData }) => {
         alignItems: 'center'
       }}>
         <span>Skills & Certificates</span>
-        <span style={{ fontSize: '14px' }}>
-          2025-06-09 10:39:42 | kshitij-dmce
-        </span>
+        
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '20px' }}>
@@ -384,15 +391,15 @@ const SkillsAndCertificates = ({ data, setData }) => {
 
         {/* Certifications Section */}
         <div>
-          <label style={{ ...labelStyle, marginBottom: '12px' }}>Certifications</label>
-          {(data.certifications || [{ name: '', link: '' }]).map((cert, idx) => (
+          <label style={{ ...labelStyle, marginBottom: '12px' }}>Certifications  </label>
+          {(data.certifications || []).map((cert, idx) => (
             <div key={idx} style={cardStyle}>
               <label style={labelStyle}>Certification Name</label>
               <input
                 type="text"
                 name="name"
                 placeholder="Certification name"
-                value={cert.name || ''}
+                value={cert?.name || ''}
                 onChange={(e) => handleCertificationChange(idx, e)}
                 style={inputStyle}
               />
@@ -401,7 +408,7 @@ const SkillsAndCertificates = ({ data, setData }) => {
                 type="url"
                 name="link"
                 placeholder="Certification URL"
-                value={cert.link || ''}
+                value={cert?.link || ''}
                 onChange={(e) => handleCertificationChange(idx, e)}
                 style={inputStyle}
               />
@@ -422,15 +429,15 @@ const SkillsAndCertificates = ({ data, setData }) => {
 
         {/* Projects Section */}
         <div>
-          <label style={{ ...labelStyle, marginBottom: '12px' }}>Projects</label>
-          {(data.projects || [{ title: '', description: '', url: '' }]).map((project, idx) => (
+          <label style={{ ...labelStyle, marginBottom: '12px' }}>Projects  </label>
+          {(data.projects || []).map((project, idx) => (
             <div key={idx} style={cardStyle}>
               <label style={labelStyle}>Project Title</label>
               <input
                 type="text"
                 name="title"
                 placeholder="Project title"
-                value={project.title || ''}
+                value={project?.title || ''}
                 onChange={(e) => handleProjectChange(idx, e)}
                 style={inputStyle}
               />
@@ -438,7 +445,7 @@ const SkillsAndCertificates = ({ data, setData }) => {
               <textarea
                 name="description"
                 placeholder="Brief description"
-                value={project.description || ''}
+                value={project?.description || ''}
                 onChange={(e) => handleProjectChange(idx, e)}
                 rows={4}
                 style={{
@@ -452,7 +459,7 @@ const SkillsAndCertificates = ({ data, setData }) => {
                 type="url"
                 name="url"
                 placeholder="https://yourproject.com"
-                value={project.url || ''}
+                value={project?.url || ''}
                 onChange={(e) => handleProjectChange(idx, e)}
                 style={inputStyle}
               />

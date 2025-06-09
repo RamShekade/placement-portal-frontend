@@ -1,14 +1,18 @@
 import React from 'react';
 import { FaLinkedin, FaGithub, FaCode, FaLaptopCode } from 'react-icons/fa';
 
-const SocialLinks = ({ data, setData }) => {
+const SocialLinks = ({ data, setData, onSaveNext }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  
-
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent page refresh
+    if (onSaveNext) {
+      onSaveNext(); // Call parent callback if provided
+    }
+  };
 
   const formGroupStyle = {
     marginBottom: '25px',
@@ -28,15 +32,17 @@ const SocialLinks = ({ data, setData }) => {
   };
 
   const inputStyle = {
-    width: '100%',
-    padding: '12px 14px 12px 42px',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    border: '1.4px solid #ccc',
-    fontSize: '15px',
-    outline: 'none',
-    boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.04)',
-  };
+  width: '100%',
+  padding: '12px 14px 12px 42px',
+  backgroundColor: '#fff',
+  borderRadius: '8px',
+  border: '1.4px solid #ccc',
+  fontSize: '15px',
+  outline: 'none',
+  boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.04)',
+  color: '#000', // This ensures the input text is visible
+};
+
 
   const iconStyle = {
     position: 'absolute',
@@ -70,7 +76,7 @@ const SocialLinks = ({ data, setData }) => {
         Social & Coding Profiles
       </h2>
 
-      <form >
+      <form onSubmit={handleSubmit}>
         {/* LinkedIn */}
         <div style={formGroupStyle}>
           <label style={labelStyle}>LinkedIn</label>
@@ -135,7 +141,7 @@ const SocialLinks = ({ data, setData }) => {
           </div>
         </div>
 
-        {/* Save Button */}
+        {/* Save and Next Button */}
         <button
           type="submit"
           style={{
@@ -153,7 +159,7 @@ const SocialLinks = ({ data, setData }) => {
           onMouseEnter={(e) => (e.target.style.backgroundColor = '#333359')}
           onMouseLeave={(e) => (e.target.style.backgroundColor = '#1e1e3f')}
         >
-          Save Links
+          Save and Next
         </button>
       </form>
     </div>
