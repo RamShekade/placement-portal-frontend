@@ -2,11 +2,13 @@ body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f4f6f9;
+  
 }
 
 .student-dashboard {
-  min-height: 100vh;
+  min-height: 50rem;
   background: #f4f6f9;
+  margin-bottom: 1rem;
 }
 
 .announcement-strip {
@@ -129,5 +131,26 @@ body {
   .dashboard-card {
     width: 100%;
     max-width: 100%;
+  }
+}
+
+.banner-container {
+  width: 100%;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.banner-image {
+  width: 100%;
+  max-width: 1500px;
+  height: auto;
+  border-radius: 0px;
+  display: block;
+  margin: auto;
+}
+
+@media (max-width: 768px) {
+  .banner-container {
+    display: none;
   }
 }

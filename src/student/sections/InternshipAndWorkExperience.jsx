@@ -183,9 +183,6 @@ const InternshipAndWorkExperience = ({ data, setData }) => {
         alignItems: 'center'
       }}>
         <span>Internship & Work Experience</span>
-        <span style={{ fontSize: '14px' }}>
-          2025-06-09 10:39:42 | kshitij-dmce
-        </span>
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '20px' }}>

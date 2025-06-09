@@ -5,7 +5,7 @@ import './StudentDashboard.css';
 
 const StudentDashboard = () => {
   const grNumber = localStorage.getItem('gr_number') || 'Unknown';
-  const studentName = localStorage.getItem('student_name') || 'Hello Student';
+  const studentName = localStorage.getItem('student_name') || 'Ashitosh Sabale';
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -20,6 +20,11 @@ const StudentDashboard = () => {
   return (
     <div className="student-dashboard">
       <CollegeHeader />
+
+      {/* Banner Image */}
+      <div className="banner-container">
+        <img src="/banner.jpg" alt="Recruiters Banner" className="banner-image" />
+      </div>
 
       <div className="announcement-strip">
         <marquee>📢 Today: Capgemini is visiting for placements! Prepare your documents and attend on time.</marquee>
