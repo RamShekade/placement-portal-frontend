@@ -1,12 +1,15 @@
 import React from 'react';
 
 const AcademicDetails = ({ data, setData }) => {
+  // Get current year for dynamic year range generation
+  const currentYear = new Date().getFullYear();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === 'student_id') {
-      if (/^\d{0,12}$/.test(value)) {
+      // Only allow exactly 11 characters, not more not less
+      if (/^[a-zA-Z0-9]{0,11}$/.test(value)) {
         setData(prev => ({ ...prev, [name]: value }));
       }
     } else {
@@ -16,6 +19,13 @@ const AcademicDetails = ({ data, setData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Additional validation for student_id length before submission
+    if (data.student_id && data.student_id.length !== 11) {
+      alert('Student ID must be exactly 11 characters.');
+      return;
+    }
+    
     alert('Academic details submitted successfully.');
     console.log('Form Data:', data);
   };
@@ -32,9 +42,17 @@ const AcademicDetails = ({ data, setData }) => {
     fontWeight: '500',
   };
 
+  // Generate year options dynamically up to current year
   const yearOptions = [];
-  for (let year = 2020; year <= 2030; year++) {
+  // Starting from 2010 (arbitrary start) up to the current year
+  for (let year = 2020; year <= currentYear; year++) {
     yearOptions.push(<option key={year} value={year}>{year}</option>);
+  }
+
+  // Generate graduation year options (current year to current year + 6)
+  const graduationYearOptions = [];
+  for (let year = 2024; year <= currentYear + 7; year++) {
+    graduationYearOptions.push(<option key={year} value={year}>{year}</option>);
   }
 
   const departmentOptions = [
@@ -47,6 +65,13 @@ const AcademicDetails = ({ data, setData }) => {
     'Artificial Intelligence and Data Science Engineering',
     'Electronics and Telecommunication Engineering (Formerly Electronic Engineering)',
     'Chemical Engineering'
+  ];
+
+  const yearLevelOptions = [
+    'First Year',
+    'Second Year',
+    'Third Year',
+    'Fourth Year',
   ];
 
   return (
@@ -79,25 +104,41 @@ const AcademicDetails = ({ data, setData }) => {
           gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
         }}
       >
-        <input
-          name="student_id"
-          placeholder="Student ID *"
-          value={data.student_id || ''}
-          onChange={handleChange}
-          required
-          maxLength="12"
-          pattern="\d{12}"
-          style={inputStyle}
-        />
+        <div style={{ position: 'relative' }}>
+          <input
+            name="student_id"
+            placeholder="Student ID *"
+            value={data.student_id || ''}
+            onChange={handleChange}
+            required
+            maxLength={11}
+            style={inputStyle}
+          />
+          {data.student_id && data.student_id.length !== 11 && (
+            <div style={{ 
+              color: 'red', 
+              fontSize: '12px', 
+              position: 'absolute', 
+              bottom: '-18px',
+              left: '0' 
+            }}>
+              Must be exactly 11 characters
+            </div>
+          )}
+        </div>
 
-        <input
+        <select
           name="current_year"
-          placeholder="Current Year *"
           value={data.current_year || ''}
           onChange={handleChange}
           required
-          style={inputStyle}
-        />
+          style={{ ...inputStyle, color: data.current_year ? '#000' : '#666' }}
+        >
+          <option value="">Select Current Year *</option>
+          {yearLevelOptions.map((year, index) => (
+            <option key={index} value={year}>{year}</option>
+          ))}
+        </select>
 
         <select
           name="year_of_admission"
@@ -117,8 +158,8 @@ const AcademicDetails = ({ data, setData }) => {
           required
           style={{ ...inputStyle, color: data.expected_graduation_year ? '#000' : '#666' }}
         >
-          <option value="">Passing Year *</option>
-          {yearOptions}
+          <option value="">Graduating Year *</option>
+          {graduationYearOptions}
         </select>
 
         <select
@@ -128,7 +169,7 @@ const AcademicDetails = ({ data, setData }) => {
           required
           style={{ ...inputStyle, color: data.department ? '#000' : '#666' }}
         >
-          <option value="">Select Department *</option>
+          <option value="">Select Programs (Branch)*</option>
           {departmentOptions.map((dept, index) => (
             <option key={index} value={dept}>{dept}</option>
           ))}

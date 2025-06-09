@@ -36,7 +36,7 @@ const ResumeUpload = ({ data, setData }) => {
 
       setFile(selectedFile);
       setFilename(selectedFile.name);
-      setData({ ...data, resume: selectedFile, resumeName: selectedFile.name }); // update parent
+      setData({ ...data, resume: selectedFile }); // update parent
     }
   };
 

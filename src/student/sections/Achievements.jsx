@@ -6,11 +6,12 @@ const Achievements = ({data, setData}) => {
   ]);
 
   const handleChange = (index, e) => {
-    const { name, value } = e.target;
-    const updated = [...achievements];
-    updated[index][name] = value;
-    setData(updated);
-  };
+  const { name, value } = e.target;
+  const updated = [...achievements];
+  updated[index][name] = value;
+  setAchievements(updated);
+  setData(prev => ({ ...prev, achievements: updated })); // ✅ update parent state
+};
 
   const handleAdd = () => {
     if (achievements.length < 5) {
@@ -53,9 +54,10 @@ const Achievements = ({data, setData}) => {
   formData.append('diploma_year', data.diploma_year);
 
   // Semester CGPAs
-  for (let i = 1; i <= 8; i++) {
-    formData.append(`sem${i}_cgpa`, data[`sem${i}_cgpa`]);
-  }
+
+    formData.append('cgpa', data['cgpa']);
+    formData.append('last_semester',data.last_semester)
+  
 
   // JSON fields
   formData.append('programming_languages', JSON.stringify(data.programming_languages || []));
@@ -83,6 +85,10 @@ const Achievements = ({data, setData}) => {
   if (data.diploma_marksheet instanceof File) {
     formData.append('diploma_marksheet', data.diploma_marksheet);
   }
+for (let pair of formData.entries()) {
+  console.log(`${pair[0]}:`, pair[1]);
+}
+
 
 
   try {

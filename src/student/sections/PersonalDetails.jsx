@@ -18,9 +18,9 @@ const PersonalDetails = ({ data, setData }) => {
   let { name, value } = e.target;
   value = value.trimStart(); // avoid leading whitespace
 
-  if (['first', 'middle', 'last'].includes(name) && /[^a-zA-Z\s]/.test(value)) return;
-  if (['contact', 'contactAlt'].includes(name) && (!/^\d*$/.test(value) || value.length > 10)) return;
-  if (name === 'aadhar' && (!/^\d*$/.test(value) || value.length > 12)) return;
+  if (['first_name', 'middle_name', 'last_name'].includes(name) && /[^a-zA-Z\s]/.test(value)) return;
+  if (['contact_number_primary', 'contact_number_alterante'].includes(name) && (!/^\d*$/.test(value) || value.length > 10)) return;
+  if (name === 'aadhar_number' && (!/^\d*$/.test(value) || value.length > 12)) return;
 
   const updatedForm = { ...form, [name]: value };
   setForm(updatedForm);
@@ -90,17 +90,17 @@ const PersonalDetails = ({ data, setData }) => {
       >
         <div>
           <label style={labelStyle}>First Name *</label>
-          <input name="first" maxLength={20} value={form.first} onChange={handleChange} required style={inputStyle} />
+          <input name="first_name" maxLength={20} value={form.first} onChange={handleChange} required style={inputStyle} />
         </div>
 
         <div>
           <label style={labelStyle}>Middle Name</label>
-          <input name="middle" maxLength={20} value={form.middle} onChange={handleChange} style={inputStyle} />
+          <input name="middle_name" maxLength={20} value={form.middle} onChange={handleChange} style={inputStyle} />
         </div>
 
         <div>
           <label style={labelStyle}>Last Name *</label>
-          <input name="last" maxLength={20} value={form.last} onChange={handleChange} required style={inputStyle} />
+          <input name="last_name" maxLength={20} value={form.last} onChange={handleChange} required style={inputStyle} />
         </div>
 
         <div>
@@ -121,13 +121,13 @@ const PersonalDetails = ({ data, setData }) => {
 
         <div>
           <label style={labelStyle}>Date of Birth *</label>
-          <input type="date" name="dob" value={form.dob} onChange={handleChange} required style={inputStyle} />
+          <input type="date" name="date_of_birth" value={form.date_of_birth} onChange={handleChange} required style={inputStyle} />
         </div>
 
         <div>
           <label style={labelStyle}>Contact Number *</label>
           <input
-            name="contact"
+            name="contact_number_primary"
             type="tel"
             value={form.contact}
             onChange={handleChange}
@@ -154,7 +154,7 @@ const PersonalDetails = ({ data, setData }) => {
         <div>
           <label style={labelStyle}>Alternate Contact</label>
           <input
-            name="contactAlt"
+            name="contact_number_alternate"
             type="tel"
             value={form.contactAlt}
             onChange={handleChange}
@@ -167,11 +167,11 @@ const PersonalDetails = ({ data, setData }) => {
         <div>
           <label style={labelStyle}>Aadhar Number *</label>
           <input
-            name="aadhar"
+            name="aadhaar_number"
             type="text"
             value={form.aadhar}
             onChange={handleChange}
-            maxLength={13}
+            maxLength={12}
             required
             style={inputStyle}
             placeholder="12-digit Aadhar number"
