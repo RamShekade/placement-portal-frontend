@@ -5,7 +5,7 @@ import './StudentDashboard.css';
 
 const StudentDashboard = () => {
   const grNumber = localStorage.getItem('gr_number') || 'Unknown';
-  const studentName = localStorage.getItem('student_name') || 'Ashitosh Sabale';
+  const studentName = localStorage.getItem('student_name') || 'Welcome Student';
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -46,15 +46,15 @@ const StudentDashboard = () => {
       </div>
 
       <div className="card-grid">
-        <div className="dashboard-card" onClick={() => handleNavigate('/profile')}>
-          <h3>📁 My Profile</h3>
+        <div className="dashboard-card" onClick={() => handleNavigate('/dashboard')}>
+          <h3>📁 Create Profile</h3>
           <p>Edit your personal and academic details here.</p>
         </div>
-        <div className="dashboard-card" onClick={() => handleNavigate('/apply')}>
+        <div className="dashboard-card" onClick={() => handleNavigate('/under-dev')}>
           <h3>📊 Apply for Placement</h3>
           <p>Browse and apply for active company openings.</p>
         </div>
-        <div className="dashboard-card" onClick={() => handleNavigate('/status')}>
+        <div className="dashboard-card" onClick={() => handleNavigate('/under-dev')}>
           <h3>📝 Application Status</h3>
           <p>Check the current status of your applications.</p>
         </div>

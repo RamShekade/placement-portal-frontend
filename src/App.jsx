@@ -5,14 +5,14 @@ import Dashboard from './student/components/Dashboard'
 import TnpCoordinator from './TnpCO/pages/TnpCoordinator'
 import ChangePassword from './student/components/ChangePassword'
 import StudentDashboard from './student/pages/StudentDashboard'
-
+import UnderDevelopmentPage from './student/pages/UnderDevelopmentPage'
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/update-pass" element={<ChangePassword/>} />
-
+        <Route path="/under-dev" element={<UnderDevelopmentPage />} />
         <Route path="/upload" element={<TnpCoordinator />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard/>} />
