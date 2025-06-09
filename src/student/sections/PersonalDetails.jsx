@@ -15,17 +15,17 @@ const PersonalDetails = ({ data, setData }) => {
 
 
   const handleChange = (e) => {
-    let { name, value } = e.target;
-    value = value.trimStart(); // avoid leading whitespace
+  let { name, value } = e.target;
+  value = value.trimStart(); // avoid leading whitespace
 
-    if (['first', 'middle', 'last'].includes(name) && /[^a-zA-Z\s]/.test(value)) return;
-    if (['contact', 'contactAlt'].includes(name) && (!/^\d*$/.test(value) || value.length > 10)) return;
-    if (name === 'aadhar' && (!/^\d*$/.test(value) || value.length >= 12)) return;
+  if (['first', 'middle', 'last'].includes(name) && /[^a-zA-Z\s]/.test(value)) return;
+  if (['contact', 'contactAlt'].includes(name) && (!/^\d*$/.test(value) || value.length > 10)) return;
+  if (name === 'aadhar' && (!/^\d*$/.test(value) || value.length > 12)) return;
 
-    const updatedForm = { ...form, [name]: value };
-    setForm(updatedForm);
-    setData(updatedForm); // update parent state
-  };
+  const updatedForm = { ...form, [name]: value };
+  setForm(updatedForm);
+  setData(updatedForm); // update parent state
+};
 
   const handlePanChange = (e) => {
     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -171,7 +171,7 @@ const PersonalDetails = ({ data, setData }) => {
             type="text"
             value={form.aadhar}
             onChange={handleChange}
-            maxLength={12}
+            maxLength={13}
             required
             style={inputStyle}
             placeholder="12-digit Aadhar number"
@@ -206,7 +206,7 @@ const PersonalDetails = ({ data, setData }) => {
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#3b82f6')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1e1e3f')}
           >
-            Submit
+            Next
           </button>
         </div>
       </form>
