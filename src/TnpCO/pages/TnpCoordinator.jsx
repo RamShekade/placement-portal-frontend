@@ -78,7 +78,7 @@ const TnpCoordinator = () => {
       setLoading(true);
       setUploadSuccess(null);
       setError('');
-      const batchSize = 30;
+      const batchSize = 10;
       let index = 0;
       let overallResult = [];
 
@@ -136,7 +136,7 @@ const TnpCoordinator = () => {
 
         if (index < data.length) {
           console.log(`⏳ Waiting 1s before next batch...`);
-          await delay(1000);
+          await delay(1500);
         }
       }
 

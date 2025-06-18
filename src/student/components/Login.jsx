@@ -1,94 +1,3 @@
-// import React, { useState } from 'react';
-// import './Login.css';
-// import backgroundImage from '../assets/images/Sign-In Page.png';
-
-// const Login = () => {
-//   const [studentId, setStudentId] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [error, setError] = useState('');
-//   const [loading, setLoading] = useState(false);
-
-//   const handleLogin = async (e) => {
-//     e.preventDefault();
-//     setError('');
-
-//     // Validate student ID length
-//     if (studentId.length !== 11) {
-//       setError('❌ Student ID must be exactly 11 characters.');
-//       return;
-//     }
-
-//     try {
-//       setLoading(true);
-
-//       const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/student/login', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//           gr_number: studentId,
-//           password: password
-//         })
-//       });
-
-//       const data = await response.json();
-
-//       if (!response.ok) {
-//         // Backend returned error (400/401 etc.)
-//         setError(data?.message || '❌ Login failed. Try again.');
-//         return;
-//       }
-
-//      localStorage.setItem('token', data.token);
-//     localStorage.setItem('gr_number', studentId);
-
-//     if (data.password_updated === 0) {
-//       // First-time login → force password update
-//       window.location.href = '/pass';
-//     } else {
-//       // Password already updated → go to dashboard
-//       window.location.href = '/student-dashboard';
-//     }
-
-
-//     } catch (err) {
-//       console.error('Login error:', err);
-//       setError('❌ Server error. Please try again later.');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="login-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
-//       <form className="login-form" onSubmit={handleLogin}>
-//         <h2>STUDENT LOGIN</h2>
-//         {error && <p style={{ color: 'red' }}>{error}</p>}
-//         <input
-//           type="text"
-//           placeholder="Student ID"
-//           value={studentId}
-//           onChange={(e) => setStudentId(e.target.value)}
-//           maxLength={11}
-//           required
-//         />
-//         <input
-//           type="password"
-//           placeholder="Password"
-//           value={password}
-//           onChange={(e) => setPassword(e.target.value)}
-//           required
-//         />
-//         <button type="submit" disabled={loading}>
-//           {loading ? 'Logging in...' : 'Login'}
-//         </button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default Login;
 import React, { useState } from 'react';
 import './Login.css';
 import dmceLogo from '../../assets/images/dmce.png';
@@ -104,7 +13,6 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!studentId.trim() || !password.trim()) {
       setError('❌ Both fields are required.');
       return;
@@ -119,33 +27,44 @@ const Login = () => {
     setLoading(true);
 
     try {
+      // Use credentials: 'include' to allow cookies to be sent/received
       const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include', // Important for cookies
         body: JSON.stringify({
           gr_number: studentId,
           password: password
         })
       });
 
-      const data = await response.json();
+      // Safer response handling
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error('Unexpected server response');
+      }
 
       if (!response.ok) {
-        setError(data?.message || '❌ Invalid credentials.');
+        setError(data?.error || '❌ Invalid credentials.');
         return;
       }
 
-      // Save credentials securely
-      localStorage.setItem('token', data.token);
+      // Store only the gr_number, not the token (token is in HttpOnly cookie)
       localStorage.setItem('gr_number', studentId);
+      localStorage.setItem('last_login', new Date().toISOString());
 
-      // Redirect based on dummy password status
+      // Redirect based on password updated status
       if (data.password_updated === 0) {
-        window.location.href = '/update-pass'; // First login - go to change password
+        window.location.href = '/update-pass';
       } else {
-        window.location.href = '/student-dashboard'; // Normal login
+        window.location.href = '/student-dashboard';
       }
 
     } catch (err) {
@@ -165,6 +84,8 @@ const Login = () => {
       <div className="left-panel">
         <img src={dmceLogo} alt="DMCE Logo" className="logo" />
         <h2>DMCE - Training & Placement Portal</h2>
+        <p className="timestamp">Current Date and Time (UTC): 2025-06-18 11:50:31</p>
+        <p className="user-login">Current User's Login: kshitij-dmce</p>
       </div>
 
       <div className="right-panel">
@@ -186,9 +107,9 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button 
-              type="button" 
-              className="password-toggle-btn" 
+            <button
+              type="button"
+              className="password-toggle-btn"
               onClick={togglePasswordVisibility}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >

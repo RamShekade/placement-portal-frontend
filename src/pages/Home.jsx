@@ -8,25 +8,14 @@ export default function Home() {
 
   const handleFile = (e) => {
     const file = e.target.files[0];
-    console.log('📁 File selected:', file.name);
-    
     const reader = new FileReader();
 
     reader.onload = (event) => {
-      console.log('📄 File read successfully');
       try {
         const workbook = XLSX.read(event.target.result, { type: 'binary' });
         const sheetName = workbook.SheetNames[0];
-        console.log('📊 Sheet name:', sheetName);
-        
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        
-        console.log(`📋 Parsed ${jsonData.length} rows from Excel:`, {
-          firstRow: jsonData[0],
-          lastRow: jsonData[jsonData.length - 1]
-        });
-        
         setData(jsonData);
       } catch (error) {
         console.error('❌ Excel parsing error:', error);
@@ -46,7 +35,6 @@ export default function Home() {
 
   const handleUpload = async () => {
     if (!data.length) {
-      console.warn('⚠️ No data to upload');
       alert('Please upload and parse a file first!');
       return;
     }
@@ -54,25 +42,14 @@ export default function Home() {
     try {
       setLoading(true);
       setUploadSuccess(null);
-      const batchSize = 30;
+      const batchSize = 10;
       let index = 0;
       let overallResult = [];
-
-      console.log(`🚀 Starting upload of ${data.length} records in batches of ${batchSize}`);
-      console.time('Total Upload Time');
 
       while (index < data.length) {
         const batch = data.slice(index, index + batchSize);
         const batchNumber = Math.floor(index / batchSize) + 1;
-        const totalBatches = Math.ceil(data.length / batchSize);
 
-        console.log(`📦 Processing batch ${batchNumber}/${totalBatches}:`, {
-          startIndex: index,
-          endIndex: index + batch.length - 1,
-          records: batch
-        });
-
-        console.time(`Batch ${batchNumber} Request`);
         try {
           const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/dummydata', {
             method: 'POST',
@@ -83,18 +60,8 @@ export default function Home() {
           const responseData = await response.json();
 
           if (!response.ok) {
-            console.error(`❌ Batch ${batchNumber} failed:`, {
-              status: response.status,
-              statusText: response.statusText,
-              response: responseData
-            });
             throw new Error(`Batch ${batchNumber} failed: ${JSON.stringify(responseData)}`);
           }
-
-          console.log(`✅ Batch ${batchNumber} success:`, {
-            status: response.status,
-            response: responseData
-          });
 
           overallResult.push({
             batch: batchNumber,
@@ -102,34 +69,21 @@ export default function Home() {
           });
 
         } catch (error) {
-          console.error(`❌ Batch ${batchNumber} error:`, error);
-          throw error;
-        } finally {
-          console.timeEnd(`Batch ${batchNumber} Request`);
+          overallResult.push({
+            batch: batchNumber,
+            result: { message: `❌ Error: ${error.message}` }
+          });
         }
 
         index += batchSize;
-
-        if (index < data.length) {
-          console.log(`⏳ Waiting 2s before next batch...`);
-          await delay(1000);
-        }
+        if (index < data.length) await delay(1500); // 1.5s delay between batches
       }
 
-      console.timeEnd('Total Upload Time');
-      console.log('🎉 Upload completed:', {
-        totalBatches: overallResult.length,
-        results: overallResult
-      });
-
-      const successMessage = `✅ All batches uploaded successfully!\n\nResults:\n${
-        overallResult.map(({batch, result}) => 
-          `Batch ${batch}: ${result.message || 'OK'}`
-        ).join('\n')
-      }`;
+      const successMessage = `✅ Upload complete.\n\n${overallResult
+        .map(({ batch, result }) => `Batch ${batch}: ${result.message || 'OK'}`)
+        .join('\n')}`;
 
       setUploadSuccess(successMessage);
-
     } catch (err) {
       console.error('❌ Upload failed:', err);
       setUploadSuccess(`❌ Error uploading: ${err.message}`);
@@ -141,15 +95,15 @@ export default function Home() {
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <h2>📤 Upload Students Excel</h2>
-      <input 
-        type="file" 
-        accept=".xlsx, .xls" 
-        onChange={handleFile} 
-        onClick={(e) => e.target.value = null} // Reset file input on click
+      <input
+        type="file"
+        accept=".xlsx, .xls"
+        onChange={handleFile}
+        onClick={(e) => e.target.value = null}
       />
       <br /><br />
-      <button 
-        onClick={handleUpload} 
+      <button
+        onClick={handleUpload}
         disabled={loading}
         style={{
           padding: '8px 16px',
@@ -182,7 +136,7 @@ export default function Home() {
         <p>📝 Notes:</p>
         <ul>
           <li>Upload Excel files with columns: GR, Email</li>
-          <li>Data is processed in batches of 2</li>
+          <li>Data is processed in batches of <strong>10</strong></li>
           <li>Please wait for completion</li>
         </ul>
       </div>

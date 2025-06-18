@@ -10,8 +10,6 @@ const ChangePassword = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const token = localStorage.getItem('token');
-
   const validations = {
     length: newPassword.length >= 8,
     uppercase: /[A-Z]/.test(newPassword),
@@ -53,8 +51,8 @@ const ChangePassword = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
           },
+          credentials: 'include', // ✅ Important: Send auth cookie
           body: JSON.stringify({
             old_password: oldPassword,
             new_password: newPassword,
@@ -71,9 +69,8 @@ const ChangePassword = () => {
 
       setMessage('✅ Password updated successfully!');
 
-      // Redirect to login after 1 second
+      // Redirect to login after 1s
       setTimeout(() => {
-        localStorage.clear();
         window.location.href = '/';
       }, 1000);
     } catch (err) {
