@@ -142,54 +142,62 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   const handleLogin = async (e) => {
-    e.preventDefault()
-    if (!studentId.trim() || !password.trim()) {
-      setError('❌ Both fields are required.')
-      return
-    }
-
-    if (studentId.length !== 11) {
-      setError('❌ Student ID must be exactly 11 characters.')
-      return
-    }
-
-    setError('')
-    setLoading(true)
-
-    try {
-      const res = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include', // ⬅️ VERY IMPORTANT for cookie-based auth
-        body: JSON.stringify({
-          gr_number: studentId,
-          password
-        })
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data?.error || '❌ Login failed')
-        return
-      }
-
-      // Redirect based on password update status
-      if (data.password_updated === 0) {
-        window.location.href = '/update-pass'
-      } else {
-        window.location.href = '/student-dashboard'
-      }
-
-    } catch (err) {
-      console.error('Login error:', err)
-      setError('❌ Server error. Please try again later.')
-    } finally {
-      setLoading(false)
-    }
+  e.preventDefault()
+  if (!studentId.trim() || !password.trim()) {
+    setError('❌ Both fields are required.')
+    return
   }
+
+  if (studentId.length !== 11) {
+    setError('❌ Student ID must be exactly 11 characters.')
+    return
+  }
+
+  setError('')
+  setLoading(true)
+
+  try {
+    const res = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        gr_number: studentId,
+        password
+      })
+    })
+
+    let data
+    const contentType = res.headers.get('content-type')
+    if (contentType && contentType.includes('application/json')) {
+      data = await res.json()
+    } else {
+      const text = await res.text()
+      throw new Error(text) // this will be caught below
+    }
+
+    if (!res.ok) {
+      setError(data?.error || '❌ Login failed')
+      return
+    }
+
+    // Redirect based on password update status
+    if (data.password_updated === 0) {
+      window.location.href = '/update-pass'
+    } else {
+      window.location.href = '/student-dashboard'
+    }
+
+  } catch (err) {
+    console.error('Login error:', err)
+    setError(`❌ ${err.message || 'Server error. Please try again later.'}`)
+  } finally {
+    setLoading(false)
+  }
+}
+
 
   return (
     <div className="login-wrapper">
