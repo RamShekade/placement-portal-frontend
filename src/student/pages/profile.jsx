@@ -1,123 +1,45 @@
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-
-// const formatList = (data) => {
-//   if (Array.isArray(data)) {
-//     return data.join(', ');
-//   } else if (typeof data === 'string') {
-//     return data.split(',').map(s => s.trim()).filter(Boolean).join(', ');
-//   }
-//   return '';
-// };
-
-// const ProfilePage = () => {
-//   const [profile, setProfile] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState('');
-
-//   useEffect(() => {
-//     const fetchProfile = async () => {
-//       const token = localStorage.getItem("token");
-
-//       try {
-//         const res = await axios.get(
-//           'https://placement-portal-backend.ramshekade20.workers.dev/api/student/profile/view',
-//           {
-//             withCredentials: true
-//           }
-//         )
-
-//         setProfile(res.data.profile);
-//       } catch (err) {
-//         setError(err.response?.data?.message || 'Failed to load profile');
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchProfile();
-//   }, []);
-
-//   if (loading) return <p>Loading profile...</p>;
-//   if (error) return <p style={{ color: 'red' }}>{error}</p>;
-
-//   return (
-//     <div style={{ padding: '2rem' }}>
-//       <h1>👤 {profile.first_name} {profile.last_name}'s Profile</h1>
-//       <img
-//         src={profile.profile_url}
-//         alt="Profile"
-//         style={{ width: '150px', borderRadius: '50%', marginBottom: '1rem' }}
-//       />
-
-//       <p><strong>Email:</strong> {profile.email}</p>
-//       <p><strong>Student ID:</strong> {profile.student_id}</p>
-//       <p><strong>DOB:</strong> {profile.date_of_birth}</p>
-//       <p><strong>Gender:</strong> {profile.gender}</p>
-//       <p><strong>Department:</strong> {profile.department}</p>
-//       <p><strong>Contact:</strong> {profile.contact_number_primary}</p>
-
-//       <h2>📄 Resume</h2>
-//       <a href={profile.resume_url} target="_blank" rel="noreferrer">View Resume</a>
-
-//       <h2>📚 Academic Info</h2>
-//       <ul>
-//         <li>SSC: {profile.ssc_percentage}% ({profile.ssc_year})</li>
-//         <li><a href={profile.ssc_marksheet_url} target="_blank" rel="noreferrer">SSC Marksheet</a></li>
-//         <li>HSC: {profile.hsc_percentage || 'N/A'}% ({profile.hsc_year || 'N/A'})</li>
-//         <li><a href={profile.hsc_marksheet_url} target="_blank" rel="noreferrer">HSC Marksheet</a></li>
-//         <li>Diploma: {profile.diploma_percentage || 'N/A'}% ({profile.diploma_year || 'N/A'})</li>
-//         <li><a href={profile.diploma_marksheet_url} target="_blank" rel="noreferrer">Diploma Marksheet</a></li>
-//       </ul>
-
-//       <br></br>
-//       <br />
-//       <br />
-//       <br />
-
-//       <h2>🛠️ Skills & Projects</h2>
-//       <p><strong>Languages:</strong> {formatList(profile.programming_languages)}</p>
-//       <p><strong>Skills:</strong> {formatList(profile.skills)}</p>
-//       <p><strong>Certifications:</strong> {formatList(profile.certifications)}</p>
-//       <p><strong>Projects:</strong> {formatList(profile.projects)}</p>
-//       <p><strong>Achievements:</strong> {formatList(profile.achievements)}</p>
-//       <p><strong>Internships:</strong> {formatList(profile.internships)}</p>
-//     </div>
-//   );
-// };
-
-// export default ProfilePage;
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CollegeHeader from "../../shared/CollegeHeader";
 
-const ProfilePage = () => {
-  const [data, setData] = useState(null);
+// Utility to format arrays or comma-separated strings
+const formatList = (data) => {
+  if (Array.isArray(data)) {
+    return data.join(', ');
+  } else if (typeof data === 'string') {
+    return data.split(',').map(s => s.trim()).filter(Boolean).join(', ');
+  }
+  return '';
+};
+
+const ViewProfile = () => {
+  const [profile, setProfile] = useState(null);
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
           "https://placement-portal-backend.ramshekade20.workers.dev/api/student/profile/view",
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
-
-        setData(res.data);
-      } catch (error) {
-        console.error("Error fetching profile:", error.response?.data || error.message);
+        setProfile(res.data.profile);
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to load profile");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProfile();
   }, []);
 
-  if (!data) {
-    return <div style={{ padding: "40px", textAlign: "center" }}>Loading profile...</div>;
-  }
+  if (loading) return <div style={{ padding: "40px", textAlign: "center" }}>Loading profile...</div>;
+  if (error) return <div style={{ padding: "40px", color: "red", textAlign: "center" }}>{error}</div>;
+
+  const data = profile;
 
   return (
     <div style={containerStyle}>
@@ -125,14 +47,13 @@ const ProfilePage = () => {
       <div style={cardStyle}>
         <h2 style={headerStyle}>View Profile - Step {step}</h2>
 
-        {/* Step-by-step UI remains unchanged */}
         {step === 1 && (
           <>
             <Section title="Basic Information">
               <Item label="Name" value={`${data?.first_name || ''} ${data?.middle_name || ''} ${data?.last_name || ''}`} />
               <Item label="Gender" value={data?.gender} />
               <Item label="Date of Birth" value={data?.date_of_birth} />
-              <Item label="Contact" value={`${data?.contact_number_primary}, ${data?.contact_number_alternate}`} />
+              <Item label="Contact" value={`${data?.contact_number_primary}, ${data?.contact_number_alternate || 'N/A'}`} />
               <Item label="Email" value={data?.email} />
               <Item label="Aadhaar" value={data?.aadhaar_number} />
               <Item label="PAN" value={data?.pan_number} />
@@ -152,8 +73,8 @@ const ProfilePage = () => {
               <Item label="Admission Year" value={data?.year_of_admission} />
               <Item label="Expected Graduation Year" value={data?.expected_graduation_year} />
               <Item label="SSC" value={`${data?.ssc_percentage}% (${data?.ssc_year})`} />
-              <Item label="HSC" value={`${data?.hsc_percentage}% (${data?.hsc_year})`} />
-              <Item label="Diploma" value={`${data?.diploma_percentage}% (${data?.diploma_year})`} />
+              <Item label="HSC" value={`${data?.hsc_percentage || 'N/A'}% (${data?.hsc_year || 'N/A'})`} />
+              <Item label="Diploma" value={`${data?.diploma_percentage || 'N/A'}% (${data?.diploma_year || 'N/A'})`} />
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(1)} />
@@ -168,8 +89,8 @@ const ProfilePage = () => {
               {Array.from({ length: 8 }, (_, i) => (
                 <Item key={i} label={`Sem ${i + 1} CGPA`} value={data?.[`sem${i + 1}_cgpa`] || "N/A"} />
               ))}
-              <Item label="Languages" value={(data?.programming_languages || []).join(', ') || "None"} />
-              <Item label="Soft Skills" value={(data?.soft_skills || []).join(', ') || "None"} />
+              <Item label="Languages" value={formatList(data?.programming_languages)} />
+              <Item label="Skills" value={formatList(data?.skills)} />
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(2)} />
@@ -181,22 +102,10 @@ const ProfilePage = () => {
         {step === 4 && (
           <>
             <Section title="Certifications">
-              {(data?.certifications || []).length > 0 ? (
-                data.certifications.map((cert, idx) => (
-                  <Item key={idx} label={cert?.name} value={cert?.issuer} />
-                ))
-              ) : (
-                <p>No certifications added.</p>
-              )}
+              <Item label="Certifications" value={formatList(data?.certifications)} />
             </Section>
             <Section title="Projects">
-              {(data?.projects || []).length > 0 ? (
-                data.projects.map((proj, idx) => (
-                  <Item key={idx} label={proj?.title} value={proj?.description} />
-                ))
-              ) : (
-                <p>No projects added.</p>
-              )}
+              <Item label="Projects" value={formatList(data?.projects)} />
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(3)} />
@@ -208,22 +117,10 @@ const ProfilePage = () => {
         {step === 5 && (
           <>
             <Section title="Achievements">
-              {(data?.achievements || []).length > 0 ? (
-                data.achievements.map((a, i) => (
-                  <Item key={i} label={a?.title} value={a?.description} />
-                ))
-              ) : (
-                <p>No achievements added.</p>
-              )}
+              <Item label="Achievements" value={formatList(data?.achievements)} />
             </Section>
             <Section title="Internships">
-              {(data?.internships || []).length > 0 ? (
-                data.internships.map((i, idx) => (
-                  <Item key={idx} label={i?.company} value={`${i?.role} (${i?.duration})`} />
-                ))
-              ) : (
-                <p>No internships added.</p>
-              )}
+              <Item label="Internships" value={formatList(data?.internships)} />
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(4)} />
@@ -294,4 +191,4 @@ const btnStyle = {
 };
 
 // --- Export ---
-export default ProfilePage;
+export default ViewProfile;
