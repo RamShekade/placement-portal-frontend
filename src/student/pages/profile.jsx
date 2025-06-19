@@ -2,18 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CollegeHeader from "../../shared/CollegeHeader";
 
-// Utility to format arrays or comma-separated strings
-const formatList = (data) => {
-  if (Array.isArray(data)) {
-    return data.join(', ');
-  } else if (typeof data === 'string') {
-    return data.split(',').map(s => s.trim()).filter(Boolean).join(', ');
-  }
-  return '';
-};
-
 const ViewProfile = () => {
-  const [profile, setProfile] = useState(null);
+  const [data, setData] = useState(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,9 +13,11 @@ const ViewProfile = () => {
       try {
         const res = await axios.get(
           "https://placement-portal-backend.ramshekade20.workers.dev/api/student/profile/view",
-          { withCredentials: true }
+          {
+            withCredentials: true
+          }
         );
-        setProfile(res.data.profile);
+        setData(res.data.profile);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load profile");
       } finally {
@@ -36,14 +28,36 @@ const ViewProfile = () => {
     fetchProfile();
   }, []);
 
-  if (loading) return <div style={{ padding: "40px", textAlign: "center" }}>Loading profile...</div>;
-  if (error) return <div style={{ padding: "40px", color: "red", textAlign: "center" }}>{error}</div>;
+  if (loading) {
+    return <div style={{ padding: "40px", textAlign: "center", color: "#1a1a1a" }}>Loading profile...</div>;
+  }
 
-  const data = profile;
+  if (error) {
+    return <div style={{ padding: "40px", textAlign: "center", color: "red" }}>{error}</div>;
+  }
 
   return (
     <div style={containerStyle}>
       <CollegeHeader />
+
+      {data?.profile_url && (
+        <div style={{ textAlign: "center", marginTop: "10px" }}>
+          <img
+            src={data.profile_url}
+            alt="Profile"
+            style={{ width: "120px", borderRadius: "50%", border: "2px solid #ddd" }}
+          />
+        </div>
+      )}
+
+      {data?.resume_url && (
+        <div style={{ textAlign: "center", marginBottom: "15px" }}>
+          <a href={data.resume_url} target="_blank" rel="noreferrer" style={{ color: "#1e3a8a", fontWeight: "bold" }}>
+            📄 View Resume
+          </a>
+        </div>
+      )}
+
       <div style={cardStyle}>
         <h2 style={headerStyle}>View Profile - Step {step}</h2>
 
@@ -53,7 +67,7 @@ const ViewProfile = () => {
               <Item label="Name" value={`${data?.first_name || ''} ${data?.middle_name || ''} ${data?.last_name || ''}`} />
               <Item label="Gender" value={data?.gender} />
               <Item label="Date of Birth" value={data?.date_of_birth} />
-              <Item label="Contact" value={`${data?.contact_number_primary}, ${data?.contact_number_alternate || 'N/A'}`} />
+              <Item label="Contact" value={`${data?.contact_number_primary}, ${data?.contact_number_alternate}`} />
               <Item label="Email" value={data?.email} />
               <Item label="Aadhaar" value={data?.aadhaar_number} />
               <Item label="PAN" value={data?.pan_number} />
@@ -89,8 +103,8 @@ const ViewProfile = () => {
               {Array.from({ length: 8 }, (_, i) => (
                 <Item key={i} label={`Sem ${i + 1} CGPA`} value={data?.[`sem${i + 1}_cgpa`] || "N/A"} />
               ))}
-              <Item label="Languages" value={formatList(data?.programming_languages)} />
-              <Item label="Skills" value={formatList(data?.skills)} />
+              <Item label="Languages" value={(data?.programming_languages || []).join(', ') || "None"} />
+              <Item label="Skills" value={(data?.skills || []).join(', ') || "None"} />
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(2)} />
@@ -102,10 +116,22 @@ const ViewProfile = () => {
         {step === 4 && (
           <>
             <Section title="Certifications">
-              <Item label="Certifications" value={formatList(data?.certifications)} />
+              {(data?.certifications || []).length > 0 ? (
+                data.certifications.map((cert, idx) => (
+                  <Item key={idx} label={cert?.name || `Certification ${idx + 1}`} value={cert?.link || 'N/A'} />
+                ))
+              ) : (
+                <p style={{ color: '#333' }}>No certifications added.</p>
+              )}
             </Section>
             <Section title="Projects">
-              <Item label="Projects" value={formatList(data?.projects)} />
+              {(data?.projects || []).length > 0 ? (
+                data.projects.map((proj, idx) => (
+                  <Item key={idx} label={proj?.title || `Project ${idx + 1}`} value={proj?.description || 'N/A'} />
+                ))
+              ) : (
+                <p style={{ color: '#333' }}>No projects added.</p>
+              )}
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(3)} />
@@ -117,10 +143,26 @@ const ViewProfile = () => {
         {step === 5 && (
           <>
             <Section title="Achievements">
-              <Item label="Achievements" value={formatList(data?.achievements)} />
+              {(data?.achievements || []).length > 0 ? (
+                data.achievements.map((a, i) => (
+                  <Item key={i} label={a?.title || `Achievement ${i + 1}`} value={a?.description || 'N/A'} />
+                ))
+              ) : (
+                <p style={{ color: '#333' }}>No achievements added.</p>
+              )}
             </Section>
             <Section title="Internships">
-              <Item label="Internships" value={formatList(data?.internships)} />
+              {(data?.internships || []).length > 0 ? (
+                data.internships.map((i, idx) => (
+                  <Item
+                    key={idx}
+                    label={i?.company || `Internship ${idx + 1}`}
+                    value={`${i?.title || 'Role'} (${i?.duration || 'N/A'})`}
+                  />
+                ))
+              ) : (
+                <p style={{ color: '#333' }}>No internships added.</p>
+              )}
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(4)} />
@@ -142,7 +184,7 @@ const Section = ({ title, children }) => (
 );
 
 const Item = ({ label, value }) => (
-  <p><strong>{label}:</strong> {value || "N/A"}</p>
+  <p style={{ color: "#1a1a1a" }}><strong>{label}:</strong> {value || "N/A"}</p>
 );
 
 const ButtonGroup = ({ children }) => (
