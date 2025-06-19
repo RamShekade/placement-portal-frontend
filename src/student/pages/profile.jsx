@@ -23,11 +23,10 @@ const ProfilePage = () => {
         const res = await axios.get(
           'https://placement-portal-backend.ramshekade20.workers.dev/api/student/profile/view',
           {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+            withCredentials: true
           }
-        );
+        )
+
         setProfile(res.data.profile);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load profile');
