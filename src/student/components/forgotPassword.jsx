@@ -1,51 +1,115 @@
 import React, { useState } from 'react';
-import './Login.css'; // Reuse the login styles
+import './Login.css';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
+  const [resetToken, setResetToken] = useState('');
   const [showOtpField, setShowOtpField] = useState(false);
   const [showResetFields, setShowResetFields] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleEmailSubmit = (e) => {
+  const baseUrl = 'https://placement-portal-backend.ramshekade20.workers.dev';
+
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
+
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setMessage('❌ Enter a valid email provided by placement coordinator.');
       return;
     }
-    setShowOtpField(true);
-    setMessage('✅ OTP sent to your email.');
+
+    try {
+      const res = await fetch(`${baseUrl}/api/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
+
+      setShowOtpField(true);
+      setMessage('✅ OTP sent to your email.');
+    } catch (err) {
+      setMessage(`❌ ${err.message}`);
+    }
   };
 
-  const handleOtpVerify = (e) => {
+  const handleOtpVerify = async (e) => {
     e.preventDefault();
-    if (otp.length !== 4 || isNaN(otp)) {
-      setMessage('❌ Enter a valid 4-digit OTP.');
+    setMessage('');
+
+    if (otp.length !== 6 || isNaN(otp)) {
+      setMessage('❌ Enter a valid 6-digit OTP.');
       return;
     }
-    setShowResetFields(true);
-    setMessage('✅ OTP verified. Set your new password.');
+
+    try {
+      const res = await fetch(`${baseUrl}/api/forgot-password/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'OTP verification failed');
+
+      setResetToken(data.reset_token);
+      setShowResetFields(true);
+      setMessage('✅ OTP verified. Set your new password.');
+    } catch (err) {
+      setMessage(`❌ ${err.message}`);
+    }
   };
 
-  const handleResetPassword = (e) => {
-    e.preventDefault();
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const handleResetPassword = async (e) => {
+  e.preventDefault();
+  setMessage('');
 
-    if (!passwordRegex.test(newPassword)) {
-      setMessage("❌ Password must be 8+ chars, 1 uppercase, 1 special char, 1 number.");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setMessage("❌ Passwords do not match.");
-      return;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  if (!passwordRegex.test(newPassword)) {
+    setMessage("❌ Password must be 8+ chars, 1 uppercase, 1 special char, 1 number.");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    setMessage("❌ Passwords do not match.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${baseUrl}/api/forgot-password/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        reset_token: resetToken,
+        new_password: newPassword,
+      }),
+    });
+
+    const rawText = await res.text();
+
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      data = { error: rawText };
     }
 
-    setMessage("✅ Password reset successfully!");
-    // TODO: Send newPassword and email to backend
-  };
+    if (!res.ok) throw new Error(data.error || 'Password reset failed');
+
+    setMessage("✅ Password reset successfully! You can now log in.");
+  } catch (err) {
+    setMessage(`❌ ${err.message}`);
+  }
+};
+
 
   return (
     <div className="login-wrapper">
@@ -79,10 +143,10 @@ const ForgotPassword = () => {
           {showOtpField && !showResetFields && (
             <input
               type="text"
-              placeholder="Enter 4-digit OTP"
+              placeholder="Enter 6-digit OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              maxLength={4}
+              maxLength={6}
             />
           )}
 
