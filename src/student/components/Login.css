@@ -156,4 +156,19 @@ html, body, #root {
   .login-form {
     max-width: 90%;
   }
+  .forgot-password-link {
+  text-align: right;
+  margin-top: 5px;
+}
+
+.forgot-password-link a {
+  font-size: 0.9rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+  text-decoration: underline;
+}
+
 }

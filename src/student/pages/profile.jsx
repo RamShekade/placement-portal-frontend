@@ -2,20 +2,24 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CollegeHeader from "../../shared/CollegeHeader";
 
+const formatList = (value) => {
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'string') return value;
+  return 'None';
+};
+
 const ViewProfile = () => {
   const [data, setData] = useState(null);
   const [step, setStep] = useState(1);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
           "https://placement-portal-backend.ramshekade20.workers.dev/api/student/profile/view",
-          {
-            withCredentials: true
-          }
+          { withCredentials: true }
         );
         setData(res.data.profile);
       } catch (err) {
@@ -29,35 +33,16 @@ const ViewProfile = () => {
   }, []);
 
   if (loading) {
-    return <div style={{ padding: "40px", textAlign: "center", color: "#1a1a1a" }}>Loading profile...</div>;
+    return <div style={{ padding: "40px", textAlign: "center" }}>Loading profile...</div>;
   }
 
   if (error) {
-    return <div style={{ padding: "40px", textAlign: "center", color: "red" }}>{error}</div>;
+    return <div style={{ padding: "40px", color: "red", textAlign: "center" }}>{error}</div>;
   }
 
   return (
     <div style={containerStyle}>
       <CollegeHeader />
-
-      {data?.profile_url && (
-        <div style={{ textAlign: "center", marginTop: "10px" }}>
-          <img
-            src={data.profile_url}
-            alt="Profile"
-            style={{ width: "120px", borderRadius: "50%", border: "2px solid #ddd" }}
-          />
-        </div>
-      )}
-
-      {data?.resume_url && (
-        <div style={{ textAlign: "center", marginBottom: "15px" }}>
-          <a href={data.resume_url} target="_blank" rel="noreferrer" style={{ color: "#1e3a8a", fontWeight: "bold" }}>
-            📄 View Resume
-          </a>
-        </div>
-      )}
-
       <div style={cardStyle}>
         <h2 style={headerStyle}>View Profile - Step {step}</h2>
 
@@ -87,8 +72,8 @@ const ViewProfile = () => {
               <Item label="Admission Year" value={data?.year_of_admission} />
               <Item label="Expected Graduation Year" value={data?.expected_graduation_year} />
               <Item label="SSC" value={`${data?.ssc_percentage}% (${data?.ssc_year})`} />
-              <Item label="HSC" value={`${data?.hsc_percentage || 'N/A'}% (${data?.hsc_year || 'N/A'})`} />
-              <Item label="Diploma" value={`${data?.diploma_percentage || 'N/A'}% (${data?.diploma_year || 'N/A'})`} />
+              <Item label="HSC" value={`${data?.hsc_percentage}% (${data?.hsc_year})`} />
+              <Item label="Diploma" value={`${data?.diploma_percentage}% (${data?.diploma_year})`} />
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(1)} />
@@ -100,11 +85,10 @@ const ViewProfile = () => {
         {step === 3 && (
           <>
             <Section title="CGPA & Skills">
-              {Array.from({ length: 8 }, (_, i) => (
-                <Item key={i} label={`Sem ${i + 1} CGPA`} value={data?.[`sem${i + 1}_cgpa`] || "N/A"} />
-              ))}
-              <Item label="Languages" value={(data?.programming_languages || []).join(', ') || "None"} />
-              <Item label="Skills" value={(data?.skills || []).join(', ') || "None"} />
+              <Item label="Current CGPA" value={data?.cgpa} />
+              <Item label="Last Semester" value={data?.last_semester} />
+              <Item label="Languages" value={formatList(data?.programming_languages)} />
+              <Item label="Skills" value={formatList(data?.skills)} />
             </Section>
             <ButtonGroup>
               <Prev onClick={() => setStep(2)} />
@@ -118,19 +102,19 @@ const ViewProfile = () => {
             <Section title="Certifications">
               {(data?.certifications || []).length > 0 ? (
                 data.certifications.map((cert, idx) => (
-                  <Item key={idx} label={cert?.name || `Certification ${idx + 1}`} value={cert?.link || 'N/A'} />
+                  <Item key={idx} label={cert?.name} value={cert?.link} />
                 ))
               ) : (
-                <p style={{ color: '#333' }}>No certifications added.</p>
+                <p>No certifications added.</p>
               )}
             </Section>
             <Section title="Projects">
               {(data?.projects || []).length > 0 ? (
                 data.projects.map((proj, idx) => (
-                  <Item key={idx} label={proj?.title || `Project ${idx + 1}`} value={proj?.description || 'N/A'} />
+                  <Item key={idx} label={proj?.title} value={proj?.description} />
                 ))
               ) : (
-                <p style={{ color: '#333' }}>No projects added.</p>
+                <p>No projects added.</p>
               )}
             </Section>
             <ButtonGroup>
@@ -145,23 +129,19 @@ const ViewProfile = () => {
             <Section title="Achievements">
               {(data?.achievements || []).length > 0 ? (
                 data.achievements.map((a, i) => (
-                  <Item key={i} label={a?.title || `Achievement ${i + 1}`} value={a?.description || 'N/A'} />
+                  <Item key={i} label={a?.title} value={a?.description} />
                 ))
               ) : (
-                <p style={{ color: '#333' }}>No achievements added.</p>
+                <p>No achievements added.</p>
               )}
             </Section>
             <Section title="Internships">
               {(data?.internships || []).length > 0 ? (
                 data.internships.map((i, idx) => (
-                  <Item
-                    key={idx}
-                    label={i?.company || `Internship ${idx + 1}`}
-                    value={`${i?.title || 'Role'} (${i?.duration || 'N/A'})`}
-                  />
+                  <Item key={idx} label={i?.company} value={`${i?.role} (${i?.duration})`} />
                 ))
               ) : (
-                <p style={{ color: '#333' }}>No internships added.</p>
+                <p>No internships added.</p>
               )}
             </Section>
             <ButtonGroup>
@@ -184,7 +164,7 @@ const Section = ({ title, children }) => (
 );
 
 const Item = ({ label, value }) => (
-  <p style={{ color: "#1a1a1a" }}><strong>{label}:</strong> {value || "N/A"}</p>
+  <p style={{ color: "#333", fontSize: "16px" }}><strong>{label}:</strong> {value || "N/A"}</p>
 );
 
 const ButtonGroup = ({ children }) => (
@@ -206,30 +186,33 @@ const containerStyle = {
   maxWidth: "960px",
   margin: "0 auto",
   padding: "20px",
+  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  color: "#1f2937"
 };
 
 const cardStyle = {
-  background: "#fff",
+  background: "#f9fafb",
   padding: "24px",
   borderRadius: "12px",
-  boxShadow: "0 4px 8px rgba(0,0,0,0.05)",
-  marginTop: "20px",
+  boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+  marginTop: "20px"
 };
 
 const headerStyle = {
-  color: "#1e1e3f",
+  color: "#111827",
   textAlign: "center",
   marginBottom: "24px",
+  fontSize: "24px"
 };
 
 const btnStyle = {
-  backgroundColor: "#1e1e3f",
+  backgroundColor: "#1e3a8a",
   color: "white",
   padding: "10px 18px",
   border: "none",
   borderRadius: "8px",
   fontSize: "14px",
-  cursor: "pointer",
+  cursor: "pointer"
 };
 
 // --- Export ---
