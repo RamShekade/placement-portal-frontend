@@ -21,11 +21,7 @@ const Achievements = ({data, setData}) => {
 
 
   const handleSubmit = async () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    alert('Token not found. Please log in.');
-    return;
-  }
+ 
 
   const formData = new FormData();
 
@@ -38,10 +34,13 @@ const Achievements = ({data, setData}) => {
   formData.append('contact_number_primary', data.contact_number_primary);
   formData.append('contact_number_alternate', data.contact_number_alternate);
   formData.append('email', data.email);
+  formData.append('alternate_email', data.alternate_email);
   formData.append('aadhaar_number', data.aadhaar_number);
   formData.append('pan_number', data.pan_number);
   formData.append('student_id_number', data.student_id);
+  formData.append('prn', data.prn);
   formData.append('current_year', data.current_year);
+  formData.append('division', data.division);
   formData.append('department', data.department);
   formData.append('year_of_admission', data.year_of_admission);
   formData.append('expected_graduation_year', data.expected_graduation_year);
@@ -62,11 +61,13 @@ const Achievements = ({data, setData}) => {
 
   // JSON fields
   formData.append('programming_languages', JSON.stringify(data.programming_languages || []));
-  formData.append('soft_skills', JSON.stringify(data.soft_skills || []));
+  formData.append('skills', JSON.stringify(data.skills || []));
   formData.append('certifications', JSON.stringify(data.certifications || []));
   formData.append('projects', JSON.stringify(data.projects || []));
   formData.append('achievements', JSON.stringify(data.achievements || []));
   formData.append('internships', JSON.stringify(data.experiences || []));
+    formData.append('social_links', JSON.stringify(data.social_links || []));
+
 
   // File fields (ensure they are File objects from input[type="file"])
   if (data.profile_photo instanceof File) {
@@ -94,13 +95,11 @@ for (let pair of formData.entries()) {
 
   try {
     const res = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/student/profile/create', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`, // ✅ token from localStorage
-        // Do NOT manually set content-type when using FormData
-      },
-      body: formData,
-    });
+  method: 'POST',
+  credentials: 'include', // ✅ sends HttpOnly cookie (JWT)
+  body: formData,         // ✅ let browser set Content-Type for FormData
+});
+
 
     const result = await res.json();
 

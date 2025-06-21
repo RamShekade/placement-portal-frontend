@@ -3,9 +3,24 @@ import { FaLinkedin, FaGithub, FaCode, FaLaptopCode } from 'react-icons/fa';
 
 const SocialLinks = ({ data, setData, onSaveNext }) => {
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData((prev) => ({ ...prev, [name]: value }));
-  };
+  const { name, value } = e.target;
+
+  // Clone the current social_links array or initialize empty array
+  const updatedLinks = data.social_links ? [...data.social_links] : ["", "", "", ""];
+
+  // Map index to field name
+  const map = { linkedin: 0, github: 1, competitive: 2, portfolio: 3 };
+
+  // Update correct index
+  if (name in map) {
+    updatedLinks[map[name]] = value;
+  }
+
+  setData((prev) => ({
+    ...prev,
+    social_links: updatedLinks,
+  }));
+};
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevent page refresh

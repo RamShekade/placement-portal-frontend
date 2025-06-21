@@ -42,6 +42,7 @@ import TnpCoordinator from './TnpCO/pages/TnpCoordinator'
 import ChangePassword from './student/components/ChangePassword'
 import StudentDashboard from './student/pages/StudentDashboard'
 import ProfilePage from './student/pages/profile'
+import ViewProfile from './student/pages/ViewProfile'
 import UnderDevelopmentPage from './student/pages/UnderDevelopmentPage'
 import ForgotPassword from './student/components/forgotPassword'
 
@@ -79,7 +80,7 @@ function App() {
             path="/profile" 
             element={
               <ProtectedRoute>
-                <ProfilePage />
+                <ViewProfile />
               </ProtectedRoute>
             } 
           />

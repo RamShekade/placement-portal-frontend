@@ -8,7 +8,7 @@ const formatList = (value) => {
   return 'None';
 };
 
-const ViewProfile = () => {
+const profile = () => {
   const [data, setData] = useState(null);
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
@@ -216,4 +216,4 @@ const btnStyle = {
 };
 
 // --- Export ---
-export default ViewProfile;
+export default profile;

@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 const PersonalDetails = ({ data, setData }) => {
   const [form, setForm] = useState({
     first: '', middle: '', last: '', gender: '', dob: '',
-    contact: '', email: '', contactAlt: '', aadhar: '', pan: ''
+    contact: '', email: '', contactAlt: '', aadhar: '', pan: '',
+    alternate_email: '' 
   });
 
   // Pre-fill the form when `data` is available
@@ -148,6 +149,17 @@ const PersonalDetails = ({ data, setData }) => {
             required
             style={inputStyle}
             placeholder="example@email.com"
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Alternate Email </label>
+          <input
+            name="alternate_email"
+            type="email"
+            value={data.alternate_email}
+            onChange={handleChange}
+            style={inputStyle}
+            placeholder="Optional alternate email"
           />
         </div>
 

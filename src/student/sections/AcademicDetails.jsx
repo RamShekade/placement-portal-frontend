@@ -15,6 +15,13 @@ const AcademicDetails = ({ data, setData }) => {
     } else {
       setData(prev => ({ ...prev, [name]: value }));
     }
+    if (name === 'prn') {
+  if (/^\d{0,16}$/.test(value)) {
+    setData(prev => ({ ...prev, [name]: value }));
+  }
+  return;
+}
+
   };
 
   const handleSubmit = (e) => {
@@ -127,6 +134,31 @@ const AcademicDetails = ({ data, setData }) => {
           )}
         </div>
 
+
+        <div style={{ position: 'relative' }}>
+  <input
+    name="prn"
+    placeholder="PRN Number *"
+    value={data.prn || ''}
+    onChange={handleChange}
+    required
+    maxLength={16}
+    style={inputStyle}
+  />
+  {data.prn && data.prn.length !== 16 && (
+    <div style={{
+      color: 'red',
+      fontSize: '12px',
+      position: 'absolute',
+      bottom: '-18px',
+      left: '0'
+    }}>
+      Must be exactly 16 digits
+    </div>
+  )}
+</div>
+
+
         <select
           name="current_year"
           value={data.current_year || ''}
@@ -174,6 +206,19 @@ const AcademicDetails = ({ data, setData }) => {
             <option key={index} value={dept}>{dept}</option>
           ))}
         </select>
+
+        <select
+  name="division"
+  value={data.division || ''}
+  onChange={handleChange}
+  required
+  style={{ ...inputStyle, color: data.division ? '#000' : '#666' }}
+>
+  <option value="">Select Division *</option>
+  <option value="A">A</option>
+  <option value="B">B</option>
+  <option value="C">C</option>
+</select>
 
         <div style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
           <button
