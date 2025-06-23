@@ -1,34 +1,40 @@
 import React from 'react';
 import { FaLinkedin, FaGithub, FaCode, FaLaptopCode } from 'react-icons/fa';
 
+/**
+ * SocialLinks component for entering social/coding links.
+ * 
+ * Fixes:
+ * - Handles value using data.social_links array for all four fields.
+ * - When rendering, always pulls from data.social_links, never from data.linkedin etc.
+ * - Ensures inputs are visible and icons show.
+ */
 const SocialLinks = ({ data, setData, onSaveNext }) => {
   const handleChange = (e) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  // Clone the current social_links array or initialize empty array
-  const updatedLinks = data.social_links ? [...data.social_links] : ["", "", "", ""];
+    // Use array for all links, fallback to 4 empty strings
+    const updatedLinks = data.social_links ? [...data.social_links] : ["", "", "", ""];
 
-  // Map index to field name
-  const map = { linkedin: 0, github: 1, competitive: 2, portfolio: 3 };
+    // Map index to field name
+    const map = { linkedin: 0, github: 1, competitive: 2, portfolio: 3 };
 
-  // Update correct index
-  if (name in map) {
-    updatedLinks[map[name]] = value;
-  }
-
-  setData((prev) => ({
-    ...prev,
-    social_links: updatedLinks,
-  }));
-};
-
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent page refresh
-    if (onSaveNext) {
-      onSaveNext(); // Call parent callback if provided
+    if (name in map) {
+      updatedLinks[map[name]] = value;
     }
+
+    setData((prev) => ({
+      ...prev,
+      social_links: updatedLinks,
+    }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (onSaveNext) onSaveNext();
+  };
+
+  // Style definitions
   const formGroupStyle = {
     marginBottom: '25px',
     position: 'relative',
@@ -47,17 +53,16 @@ const SocialLinks = ({ data, setData, onSaveNext }) => {
   };
 
   const inputStyle = {
-  width: '100%',
-  padding: '12px 14px 12px 42px',
-  backgroundColor: '#fff',
-  borderRadius: '8px',
-  border: '1.4px solid #ccc',
-  fontSize: '15px',
-  outline: 'none',
-  boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.04)',
-  color: '#000', // This ensures the input text is visible
-};
-
+    width: '100%',
+    padding: '12px 14px 12px 42px',
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    border: '1.4px solid #ccc',
+    fontSize: '15px',
+    outline: 'none',
+    boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.04)',
+    color: '#000',
+  };
 
   const iconStyle = {
     position: 'absolute',
@@ -66,7 +71,11 @@ const SocialLinks = ({ data, setData, onSaveNext }) => {
     transform: 'translateY(-50%)',
     color: '#1e1e3f',
     fontSize: '18px',
+    pointerEvents: 'none', // Let user click through to input
   };
+
+  // Use data.social_links array for values. Fallback to ""
+  const social_links = data.social_links || ["", "", "", ""];
 
   return (
     <div
@@ -101,9 +110,10 @@ const SocialLinks = ({ data, setData, onSaveNext }) => {
               type="url"
               name="linkedin"
               placeholder="https://www.linkedin.com/in/your-profile"
-              value={data.linkedin || ''}
+              value={social_links[0]}
               onChange={handleChange}
               style={inputStyle}
+              autoComplete="off"
             />
           </div>
         </div>
@@ -117,9 +127,10 @@ const SocialLinks = ({ data, setData, onSaveNext }) => {
               type="url"
               name="github"
               placeholder="https://github.com/your-username"
-              value={data.github || ''}
+              value={social_links[1]}
               onChange={handleChange}
               style={inputStyle}
+              autoComplete="off"
             />
           </div>
         </div>
@@ -133,9 +144,10 @@ const SocialLinks = ({ data, setData, onSaveNext }) => {
               type="url"
               name="competitive"
               placeholder="https://leetcode.com/your-id"
-              value={data.competitive || ''}
+              value={social_links[2]}
               onChange={handleChange}
               style={inputStyle}
+              autoComplete="off"
             />
           </div>
         </div>
@@ -149,9 +161,10 @@ const SocialLinks = ({ data, setData, onSaveNext }) => {
               type="url"
               name="portfolio"
               placeholder="https://your-portfolio.com"
-              value={data.portfolio || ''}
+              value={social_links[3]}
               onChange={handleChange}
               style={inputStyle}
+              autoComplete="off"
             />
           </div>
         </div>

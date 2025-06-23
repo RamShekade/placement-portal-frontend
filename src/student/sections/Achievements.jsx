@@ -106,6 +106,7 @@ for (let pair of formData.entries()) {
     if (res.ok) {
       alert('✅ Profile created successfully!');
       console.log(result);
+      window.location.href = '/student-dashboard';
     } else {
       alert('❌ Failed: ' + result?.error || 'Something went wrong');
       console.error(result);

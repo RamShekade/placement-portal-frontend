@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const PersonalDetails = ({ data, setData }) => {
   const [form, setForm] = useState({
     first: '', middle: '', last: '', gender: '', dob: '',
-    contact: '', email: '', contactAlt: '', aadhar: '', pan: '',
+    contact: '', email: '', contactAlt: '', aadhar: '', pan_number: '',
     alternate_email: '' 
   });
 
@@ -30,7 +30,7 @@ const PersonalDetails = ({ data, setData }) => {
 
   const handlePanChange = (e) => {
     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    const updatedForm = { ...form, pan: value };
+    const updatedForm = { ...form, pan_number: value };
     setForm(updatedForm);
     setData(updatedForm); // update parent state
   };
