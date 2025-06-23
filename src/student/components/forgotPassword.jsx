@@ -182,7 +182,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // For redirection
-import './ForgotPassword.css';
+import './forgotPassword.css';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
