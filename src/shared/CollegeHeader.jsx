@@ -14,7 +14,7 @@ const CollegeHeader = () => {
       <img src={dmceLogo} alt="DMCE Logo" style={{ width: '50px', marginRight: '15px' }} />
       <div>
         <div style={{ fontSize: '14px', opacity: 0.8,}}>Nagar Yuvak Shikshan Sanstha, Airoli</div>
-        <div style={{ fontSize: '20px', fontWeight: 'bold' }}>Datta Meghe College Of Engineering</div>
+        <div style={{ fontSize: '20px', fontWeight: 'bold' }}>Datta Meghe College of Engineering</div>
       </div>
     </div>
   );

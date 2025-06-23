@@ -122,6 +122,8 @@ const ViewProfile = () => {
         <Item label="Primary Contact" value={data?.contact_number_primary} />
         <Item label="Alternate Contact" value={data?.contact_number_alternate} />
         <Item label="Email Address" value={data?.email} />
+        <Item label="Alternate Email" value={data?.alternate_email} />
+
         <Item label="Aadhaar Number" value={data?.aadhaar_number} />
         <Item label="PAN Number" value={data?.pan_number} />
       </Section>
@@ -134,6 +136,9 @@ const ViewProfile = () => {
         <div className="content-grid">
           <Item label="Department" value={data?.department} />
           <Item label="Current Year" value={data?.current_year} />
+          <Item label="PRN Number" value={data?.prn} />
+          <Item label="Division" value={data?.division} />
+
           <Item label="Year of Admission" value={data?.year_of_admission} />
           <Item label="Expected Graduation" value={data?.expected_graduation_year} />
           <Item label="Current CGPA" value={data?.cgpa} />
@@ -321,7 +326,10 @@ const ViewProfile = () => {
     </div>
   );
 
-  const renderCertifications = () => (
+const renderCertifications = () => {
+  const socialLabels = ['LinkedIn', 'GitHub', 'Competitive Coding', 'Portfolio'];
+
+  return (
     <div className="content-single">
       <Section title="Certifications & Licenses" icon={<FaCertificate />}>
         {(data?.certifications || []).length > 0 ? (
@@ -330,10 +338,8 @@ const ViewProfile = () => {
               <div key={idx} className="list-item">
                 <div className="list-item-header">
                   <h4 className="list-item-title">Title :- {cert?.name || `Certification ${idx + 1}`}</h4>
-
                 </div>
                 <div className="list-item-content">
-                 
                   {cert?.link && (
                     <Item 
                       label="Certificate" 
@@ -351,9 +357,30 @@ const ViewProfile = () => {
         ) : (
           <div className="empty-state">No certifications added yet.</div>
         )}
+
+        {Array.isArray(data?.social_links) && data.social_links.length > 0 && (
+          <div style={{ marginTop: '20px' }}>
+            <h4 className="section-title" style={{ fontSize: '17px' }}>Social Links</h4>
+            {data.social_links.map((link, idx) => {
+              const label = socialLabels[idx] || `Link ${idx + 1}`;
+              return link ? (
+                <Item
+                  key={idx}
+                  label={label}
+                  value={
+                    <a href={link} target="_blank" rel="noopener noreferrer" className="file-link">
+                      <FaExternalLinkAlt /> {link}
+                    </a>
+                  }
+                />
+              ) : null;
+            })}
+          </div>
+        )}
       </Section>
     </div>
   );
+};
 
   const renderContent = () => {
     switch (activeTab) {

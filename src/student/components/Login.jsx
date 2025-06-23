@@ -182,13 +182,16 @@ const Login = () => {
       // Store authentication information
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('gr_number', studentId);
+      localStorage.setItem('full_name', data.full_name);
       localStorage.setItem('loginTime', data.login_time || new Date().toISOString());
+if (data.password_updated === 0) {
+  window.location.href = '/update-pass';
+} else if (data.profile_created === false) {
+  window.location.href = '/dashboard';
+} else {
+  window.location.href = '/student-dashboard';
+}
 
-      if (data.password_updated === 0) {
-        window.location.href = '/update-pass';
-      } else {
-        window.location.href = '/student-dashboard';
-      }
     } catch (err) {
       console.error('Login error:', err);
       setError(`❌ ${err.message || 'Server error. Please try again later.'}`);
