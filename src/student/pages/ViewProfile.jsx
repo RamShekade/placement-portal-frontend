@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CollegeHeader from "../../shared/CollegeHeader";
-import { 
-  FaUser, 
-  FaGraduationCap, 
-  FaCode, 
-  FaCertificate, 
-  FaTrophy, 
+import {
+  FaUser,
+  FaGraduationCap,
+  FaCode,
+  FaCertificate,
+  FaTrophy,
   FaBuilding,
   FaDownload,
   FaImage,
@@ -14,25 +14,97 @@ import {
   FaExternalLinkAlt,
   FaMapMarkerAlt,
   FaCalendarAlt,
-  FaEdit
+  FaEdit,
+  FaLink,
+  FaGithub,
+  FaLinkedin,
+  FaGlobe
 } from 'react-icons/fa';
+import { SiCodeforces } from "react-icons/si";
 import './ViewProfile.css';
 
-const ViewProfile = () => {
+const TABS = [
+  { id: 'basic', label: 'Basic', icon: <FaUser /> },
+  { id: 'academic', label: 'Academics', icon: <FaGraduationCap /> },
+  { id: 'skills', label: 'Skills', icon: <FaCode /> },
+  { id: 'projects', label: 'Projects', icon: <FaCode /> },
+  { id: 'experience', label: 'Experience', icon: <FaBuilding /> },
+  { id: 'achievements', label: 'Awards', icon: <FaTrophy /> },
+  { id: 'certifications', label: 'Links', icon: <FaLink /> }
+];
+
+
+const formatList = (value) => {
+  if (Array.isArray(value)) return value.filter(Boolean).join(', ');
+  if (typeof value === 'string') return value;
+  return 'Not specified';
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'Not specified';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  } catch {
+    return dateString;
+  }
+};
+
+const renderFileLink = (url, filename, type = 'pdf') => {
+  if (!url) return <span className="item-value">Not uploaded</span>;
+  const isImage = type === 'image' || url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+  return (
+    <div className="file-display">
+      {isImage ? (
+        <div>
+          <img
+            src={url}
+            alt={filename}
+            className="image-preview"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'block';
+            }}
+          />
+          <div style={{ display: 'none', color: '#dc2626', fontStyle: 'italic' }}>
+            Image failed to load
+          </div>
+          <a href={url} target="_blank" rel="noopener noreferrer" className="file-link">
+            <FaImage /> View Image
+          </a>
+        </div>
+      ) : (
+        <a href={url} target="_blank" rel="noopener noreferrer" className="file-link">
+          <FaFilePdf /> {filename || 'Download'}
+        </a>
+      )}
+    </div>
+  );
+};
+
+const Section = ({ title, icon, children }) => (
+  <div className="section">
+    <h3 className="section-title">{icon} {title}</h3>
+    {children}
+  </div>
+);
+
+const Item = ({ label, value }) => (
+  <div className="item">
+    <div className="item-label">{label}</div>
+    <div className="item-value">{value || "Not specified"}</div>
+  </div>
+);
+
+const Profile = () => {
   const [data, setData] = useState(null);
   const [activeTab, setActiveTab] = useState('basic');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-
-  const tabs = [
-    { id: 'basic', label: 'Basic Info', icon: <FaUser /> },
-    { id: 'academic', label: 'Academic', icon: <FaGraduationCap /> },
-    { id: 'skills', label: 'Skills', icon: <FaCode /> },
-    { id: 'projects', label: 'Projects', icon: <FaCode /> },
-    { id: 'experience', label: 'Experience', icon: <FaBuilding /> },
-    { id: 'achievements', label: 'Achievements', icon: <FaTrophy /> },
-    { id: 'certifications', label: 'Certifications', icon: <FaCertificate /> }
-  ];
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -52,60 +124,7 @@ const ViewProfile = () => {
     fetchProfile();
   }, []);
 
-  const formatList = (value) => {
-    if (Array.isArray(value)) return value.join(', ');
-    if (typeof value === 'string') return value;
-    return 'Not specified';
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Not specified';
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    } catch {
-      return dateString;
-    }
-  };
-
-  const renderFileLink = (url, filename, type = 'pdf') => {
-    if (!url) return <span className="item-value">Not uploaded</span>;
-    
-    const isImage = type === 'image' || url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-    
-    return (
-      <div className="file-display">
-        {isImage ? (
-          <div>
-            <img 
-              src={url} 
-              alt={filename} 
-              className="image-preview"
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'block';
-              }}
-            />
-            <div style={{ display: 'none', color: '#dc2626', fontStyle: 'italic' }}>
-              Image failed to load
-            </div>
-            <a href={url} target="_blank" rel="noopener noreferrer" className="file-link">
-              <FaImage /> View Image
-            </a>
-          </div>
-        ) : (
-          <a href={url} target="_blank" rel="noopener noreferrer" className="file-link">
-            <FaFilePdf /> {filename || 'Download'}
-          </a>
-        )}
-      </div>
-    );
-  };
-
+  // Render sections
   const renderBasicInfo = () => (
     <div className="content-grid">
       <Section title="Personal Information" icon={<FaUser />}>
@@ -117,14 +136,12 @@ const ViewProfile = () => {
           <Item label="Profile Picture" value={renderFileLink(data.profile_url, "Profile Picture", "image")} />
         )}
       </Section>
-
       <Section title="Contact Information" icon={<FaUser />}>
         <Item label="Primary Contact" value={data?.contact_number_primary} />
         <Item label="Alternate Contact" value={data?.contact_number_alternate} />
         <Item label="Email Address" value={data?.email} />
-        <Item label="Alternate Email" value={data?.alternate_email} />
-
         <Item label="Aadhaar Number" value={data?.aadhaar_number} />
+        <Item label="Alternate Email" value={data?.alternate_email} />
         <Item label="PAN Number" value={data?.pan_number} />
       </Section>
     </div>
@@ -132,7 +149,7 @@ const ViewProfile = () => {
 
   const renderAcademicInfo = () => (
     <div className="content-single">
-      <Section title="Current Academic Status" icon={<FaGraduationCap />}>
+    <Section title="Current Academic Status" icon={<FaGraduationCap />}>
         <div className="content-grid">
           <Item label="Department" value={data?.department} />
           <Item label="Current Year" value={data?.current_year} />
@@ -160,7 +177,6 @@ const ViewProfile = () => {
               )}
             </div>
           </div>
-
           <div className="list-item">
             <div className="list-item-header">
               <h4 className="list-item-title">HSC (12th Grade)</h4>
@@ -173,7 +189,6 @@ const ViewProfile = () => {
               )}
             </div>
           </div>
-
           {(data?.diploma_percentage || data?.diploma_marksheet_url) && (
             <div className="list-item">
               <div className="list-item-header">
@@ -214,18 +229,17 @@ const ViewProfile = () => {
               <div key={idx} className="list-item">
                 <div className="list-item-header">
                   <h4 className="list-item-title">{project?.title || `Project ${idx + 1}`}</h4>
-                  {project?.duration && <span className="list-item-meta">{project.duration}</span>}
                 </div>
                 <div className="list-item-content">
                   <Item label="Description" value={project?.description} />
                   {project?.url && (
-                    <Item 
-                      label="Project Link" 
+                    <Item
+                      label="Project Link"
                       value={
                         <a href={project.url} target="_blank" rel="noopener noreferrer" className="file-link">
                           <FaExternalLinkAlt /> View Project
                         </a>
-                      } 
+                      }
                     />
                   )}
                 </div>
@@ -244,36 +258,36 @@ const ViewProfile = () => {
       <Section title="Work Experience" icon={<FaBuilding />}>
         {(data?.internships || []).length > 0 ? (
           <div className="list-container">
-            {data.internships.map((experience, idx) => (
+            {data.internships.map((exp, idx) => (
               <div key={idx} className="list-item">
                 <div className="list-item-header">
-                  <h4 className="list-item-title">{experience?.title || experience?.company || `Experience ${idx + 1}`}</h4>
+                  <h4 className="list-item-title">{exp?.title || exp?.company || `Experience ${idx + 1}`}</h4>
                   <span className="list-item-meta">
-                    <FaMapMarkerAlt /> {experience?.location || 'Remote'}
+                    <FaMapMarkerAlt /> {exp?.location || 'Remote'}
                   </span>
                 </div>
                 <div className="list-item-content">
-                  <Item label="Company" value={experience?.company} />
-                  <Item label="Employment Type" value={experience?.employmentType || 'Internship'} />
-                  <Item label="Duration" value={experience?.duration} />
-                  {experience?.startDate && (
-                    <Item label="Start Date" value={formatDate(experience?.startDate)} />
+                  <Item label="Company" value={exp?.company} />
+                  <Item label="Employment Type" value={exp?.employmentType || 'Internship'} />
+                  <Item label="Duration" value={exp?.duration} />
+                  {exp?.startDate && (
+                    <Item label="Start Date" value={formatDate(exp?.startDate)} />
                   )}
-                  {experience?.endDate && !experience?.currentlyWorking && (
-                    <Item label="End Date" value={formatDate(experience?.endDate)} />
+                  {exp?.endDate && !exp?.currentlyWorking && (
+                    <Item label="End Date" value={formatDate(exp?.endDate)} />
                   )}
-                  {experience?.currentlyWorking && (
+                  {exp?.currentlyWorking && (
                     <Item label="Status" value="Currently Working" />
                   )}
-                  <Item label="Description" value={experience?.description} />
-                  {experience?.mediaLink && (
-                    <Item 
-                      label="Media" 
+                  <Item label="Description" value={exp?.description} />
+                  {exp?.mediaLink && (
+                    <Item
+                      label="Media"
                       value={
-                        <a href={experience.mediaLink} target="_blank" rel="noopener noreferrer" className="file-link">
+                        <a href={exp.mediaLink} target="_blank" rel="noopener noreferrer" className="file-link">
                           <FaExternalLinkAlt /> View Media
                         </a>
-                      } 
+                      }
                     />
                   )}
                 </div>
@@ -292,27 +306,27 @@ const ViewProfile = () => {
       <Section title="Achievements & Awards" icon={<FaTrophy />}>
         {(data?.achievements || []).length > 0 ? (
           <div className="list-container">
-            {data.achievements.map((achievement, idx) => (
+            {data.achievements.map((ach, idx) => (
               <div key={idx} className="list-item">
                 <div className="list-item-header">
-                  <h4 className="list-item-title">{achievement?.title || `Achievement ${idx + 1}`}</h4>
-                  {achievement?.date && (
+                  <h4 className="list-item-title">{ach?.title || `Achievement ${idx + 1}`}</h4>
+                  {ach?.date && (
                     <span className="list-item-meta">
-                      <FaCalendarAlt /> {formatDate(achievement.date)}
+                      <FaCalendarAlt /> {formatDate(ach.date)}
                     </span>
                   )}
                 </div>
                 <div className="list-item-content">
-                  <Item label="Description" value={achievement?.description} />
-                  <Item label="Organization" value={achievement?.organization} />
-                  {achievement?.media && (
-                    <Item 
-                      label="Media" 
+                  <Item label="Description" value={ach?.description} />
+                  <Item label="Organization" value={ach?.organization} />
+                  {ach?.media && (
+                    <Item
+                      label="Media"
                       value={
-                        <a href={achievement.media} target="_blank" rel="noopener noreferrer" className="file-link">
+                        <a href={ach.media} target="_blank" rel="noopener noreferrer" className="file-link">
                           <FaExternalLinkAlt /> View Media
                         </a>
-                      } 
+                      }
                     />
                   )}
                 </div>
@@ -326,8 +340,14 @@ const ViewProfile = () => {
     </div>
   );
 
-const renderCertifications = () => {
-  const socialLabels = ['LinkedIn', 'GitHub', 'Competitive Coding', 'Portfolio'];
+  const renderCertifications = () => {
+ const socialLabels = [
+  { label: 'LinkedIn', icon: <FaLinkedin color="#0077b5" /> },
+  { label: 'GitHub', icon: <FaGithub color="#333" /> },
+  { label: 'Competitive Coding', icon: <SiCodeforces color="#EE8208" /> },
+  { label: 'Portfolio', icon: <FaGlobe color="#1e1e3f" /> }
+];
+
 
   return (
     <div className="content-single">
@@ -358,25 +378,50 @@ const renderCertifications = () => {
           <div className="empty-state">No certifications added yet.</div>
         )}
 
-        {Array.isArray(data?.social_links) && data.social_links.length > 0 && (
-          <div style={{ marginTop: '20px' }}>
-            <h4 className="section-title" style={{ fontSize: '17px' }}>Social Links</h4>
-            {data.social_links.map((link, idx) => {
-              const label = socialLabels[idx] || `Link ${idx + 1}`;
-              return link ? (
-                <Item
-                  key={idx}
-                  label={label}
-                  value={
-                    <a href={link} target="_blank" rel="noopener noreferrer" className="file-link">
-                      <FaExternalLinkAlt /> {link}
-                    </a>
-                  }
-                />
-              ) : null;
-            })}
-          </div>
-        )}
+       {Array.isArray(data?.social_links) && data.social_links.length > 0 && (
+  <div style={{ marginTop: '20px' }}>
+    <h4
+      className="section-title"
+      style={{
+        fontSize: '17px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        background: 'transparent',
+        marginBottom: '12px'
+      }}
+    >
+      <FaLink style={{ color: '#1e1e3f' }} />
+      Social Links
+    </h4>
+    {data.social_links.map((link, idx) => {
+      if (!link) return null;
+      const social = socialLabels[idx] || { label: `Link ${idx + 1}`, icon: <FaLink style={{ color: '#1e1e3f' }} /> };
+      return (
+        <Item
+          key={idx}
+          label={
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {social.icon}
+              {social.label}
+            </span>
+          }
+          value={
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="file-link"
+              style={{ wordBreak: "break-all" }}
+            >
+              <FaExternalLinkAlt /> {link}
+            </a>
+          }
+        />
+      );
+    })}
+  </div>
+)}
       </Section>
     </div>
   );
@@ -429,14 +474,12 @@ const renderCertifications = () => {
   return (
     <div className="profile-container">
       <CollegeHeader />
-      
       <div className="profile-card">
         <div className="profile-header">
           <h2>Student Profile Portal</h2>
         </div>
-
         <div className="nav-tabs">
-          {tabs.map(tab => (
+          {TABS.map(tab => (
             <button
               key={tab.id}
               className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
@@ -446,12 +489,10 @@ const renderCertifications = () => {
             </button>
           ))}
         </div>
-
         <div className="profile-content fade-in">
           {renderContent()}
         </div>
       </div>
-
       <button className="edit-button" onClick={() => alert("Redirect to edit page")}>
         <FaEdit /> Edit Profile
       </button>
@@ -459,21 +500,4 @@ const renderCertifications = () => {
   );
 };
 
-// Components
-const Section = ({ title, icon, children }) => (
-  <div className="section">
-    <h3 className="section-title">
-      {icon} {title}
-    </h3>
-    {children}
-  </div>
-);
-
-const Item = ({ label, value }) => (
-  <div className="item">
-    <div className="item-label">{label}</div>
-    <div className="item-value">{value || "Not specified"}</div>
-  </div>
-);
-
-export default ViewProfile;
+export default Profile;

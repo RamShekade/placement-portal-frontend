@@ -6,6 +6,7 @@ import './StudentDashboard.css';
 const StudentDashboard = () => {
   const grNumber = localStorage.getItem('gr_number') || 'Unknown';
   const studentName = localStorage.getItem('full_name') || 'Welcome Student';
+  const profile_url = localStorage.getItem('profile_url');
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -33,7 +34,7 @@ const StudentDashboard = () => {
       <div className="dashboard-header">
         <div className="profile-info">
           <img
-            src="https://www.citypng.com/public/uploads/preview/hd-man-user-illustration-icon-transparent-png-701751694974843ybexneueic.png"
+            src={profile_url}
             alt="Default User"
             className="profile-pic"
           />

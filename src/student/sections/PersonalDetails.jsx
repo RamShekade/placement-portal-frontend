@@ -146,6 +146,7 @@ const PersonalDetails = ({ data, setData }) => {
             type="email"
             value={data.email}
             onChange={handleChange}
+            disabled 
             required
             style={inputStyle}
             placeholder="example@email.com"

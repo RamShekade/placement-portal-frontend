@@ -181,7 +181,9 @@ const Login = () => {
 
       // Store authentication information
       localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('gr_number', studentId);
+      localStorage.setItem('gr_number', data.user_id);
+      localStorage.setItem('email',data.email)
+      localStorage.setItem('profile_url',data.profile_url)
       localStorage.setItem('full_name', data.full_name);
       localStorage.setItem('loginTime', data.login_time || new Date().toISOString());
 if (data.password_updated === 0) {

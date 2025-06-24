@@ -118,6 +118,7 @@ const AcademicDetails = ({ data, setData }) => {
             value={data.student_id || ''}
             onChange={handleChange}
             required
+            disabled 
             maxLength={11}
             style={inputStyle}
           />
