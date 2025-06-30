@@ -41,10 +41,14 @@ import Dashboard from './student/components/Dashboard'
 import TnpCoordinator from './TnpCO/pages/TnpCoordinator'
 import ChangePassword from './student/components/ChangePassword'
 import StudentDashboard from './student/pages/StudentDashboard'
-import ProfilePage from './student/pages/profile'
+
 import ViewProfile from './student/pages/ViewProfile'
 import UnderDevelopmentPage from './student/pages/UnderDevelopmentPage'
 import ForgotPassword from './student/components/forgotPassword'
+import CompanyLogin from '../../../../Downloads/placement-portal-frontend/placement-portal-frontend/src/company/Login/CompanyLogin'
+import CompanyRegister from '../../../../Downloads/placement-portal-frontend/placement-portal-frontend/src/company/CompanyRegister'
+import CompanyDashboard from '../../../../Downloads/placement-portal-frontend/placement-portal-frontend/src/company/CompanyDashboard'
+import CompanySidebar from '../../../../Downloads/placement-portal-frontend/placement-portal-frontend/src/company/Jobposting/CompanySidebar'
 
 function App() {
   return (
@@ -55,10 +59,17 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/company-login" element={<CompanyLogin />} />
           
           {/* Semi-Protected Route - For password updates (uses existing auth from login) */}
           <Route path="/update-pass" element={<ChangePassword />} />
           
+
+        <Route path="/companyRegi" element={<CompanyRegister />} />
+        <Route path="/company-dashboard" element={<CompanyDashboard />} />
+        <Route path="/company/create-job" element={<CompanySidebar />} />
+
+
           {/* Protected Routes - Authentication required */}
           <Route 
             path="/student-dashboard" 
