@@ -3,6 +3,7 @@ import './CompanyLogin.css';
 import dmceLogo from '../../assets/images/dmce.png';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { SiDatagrip } from 'react-icons/si';
 
 const CompanyLogin = () => {
   const [companyEmail, setCompanyEmail] = useState('');
@@ -23,14 +24,14 @@ const CompanyLogin = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/company/auth/login', {
+      const res = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/company-auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-          email : companyId,
+          email : companyEmail,
           password:password,
         }),
       });
@@ -48,17 +49,18 @@ const CompanyLogin = () => {
         setError(data?.error || '❌ Login failed');
         return;
       }
+      console.log(data)
 
       localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('company_id', data.company_id);
-      localStorage.setItem('email', data.email);
       localStorage.setItem('company_name', data.company_name);
+      localStorage.setItem('email', data.email);
+      localStorage.setItem('company_logo', data.company_logo);
       localStorage.setItem('loginTime', data.login_time || new Date().toISOString());
 
       if (data.password_updated === 0) {
-        window.location.href = '/update-pass';
+        window.location.href = '/company/update-pass';
       } else if (data.profile_created === false) {
-        window.location.href = '/company-dashboard';
+        window.location.href = '/companyRegi';
       } else {
         window.location.href = '/company-dashboard';
       }
@@ -100,7 +102,7 @@ const CompanyLogin = () => {
             <input
               type="text"
               placeholder="Registered Email ID"
-              value={companyId}
+              value={companyEmail}
               onChange={(e) => setCompanyEmail(e.target.value)}
             />
 

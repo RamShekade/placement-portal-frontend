@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import CollegeHeader from '../../shared/CollegeHeader';
@@ -11,6 +10,15 @@ const TnpCoordinator = () => {
   const [error, setError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Company details state
+  const [companyDetails, setCompanyDetails] = useState({
+    companyName: '',
+    companyEmail: ''
+  });
+  const [companyError, setCompanyError] = useState('');
+  const [companySuccess, setCompanySuccess] = useState('');
+  const [sendingMail, setSendingMail] = useState(false);
 
   const handleFile = (e) => {
     const selectedFile = e.target.files[0];
@@ -164,11 +172,140 @@ const TnpCoordinator = () => {
     }
   };
 
+  // Company details handlers
+  const handleCompanyInputChange = (e) => {
+    const { name, value } = e.target;
+    setCompanyDetails(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setCompanyError('');
+    setCompanySuccess('');
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleSendMail = async () => {
+    setCompanyError('');
+    setCompanySuccess('');
+
+    // Validation
+    if (!companyDetails.companyName.trim()) {
+      setCompanyError('Company name is required.');
+      return;
+    }
+
+    if (!companyDetails.companyEmail.trim()) {
+      setCompanyError('Company email is required.');
+      return;
+    }
+
+    if (!validateEmail(companyDetails.companyEmail)) {
+      setCompanyError('Please enter a valid email address.');
+      return;
+    }
+
+    try {
+      setSendingMail(true);
+      
+      const mailPayload = {
+        company_name: companyDetails.companyName.trim(),
+        email: companyDetails.companyEmail.trim()
+      };
+
+      console.log('📧 Sending mail with payload:', mailPayload);
+
+      const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/list-company', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mailPayload)
+      });
+
+      const responseData = await response.json();
+      console.log('📧 Mail response:', responseData);
+
+      if (!response.ok) {
+        throw new Error(responseData.message || `Failed to send mail: ${response.status}`);
+      }
+
+      setCompanySuccess(`✅ Invitation email sent successfully to ${companyDetails.companyEmail}`);
+      
+      // Clear form after successful send
+      setCompanyDetails({
+        companyName: '',
+        companyEmail: ''
+      });
+
+    } catch (error) {
+      console.error('❌ Mail sending failed:', error);
+      setCompanyError(`Failed to send email: ${error.message}`);
+    } finally {
+      setSendingMail(false);
+    }
+  };
+
   return (
     <div className="tnp-container">
       <CollegeHeader />
+      
+      {/* Company Invitation Section */}
       <div className="upload-section">
-        <h2 className="header">TnP Coordinator Portal</h2>
+        <h2 className="header">Company Invitation Portal</h2>
+        
+        <div className="company-form">
+          <div className="form-group">
+            <label htmlFor="companyName" className="form-label">
+              🏢 Company Name
+            </label>
+            <input
+              id="companyName"
+              name="companyName"
+              type="text"
+              placeholder="Enter company name"
+              value={companyDetails.companyName}
+              onChange={handleCompanyInputChange}
+              className="form-input"
+              disabled={sendingMail}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="companyEmail" className="form-label">
+              📧 Company Email
+            </label>
+            <input
+              id="companyEmail"
+              name="companyEmail"
+              type="email"
+              placeholder="Enter company email address"
+              value={companyDetails.companyEmail}
+              onChange={handleCompanyInputChange}
+              className="form-input"
+              disabled={sendingMail}
+            />
+          </div>
+
+          {companyError && <p className="error-msg">{companyError}</p>}
+          {companySuccess && <p className="success-msg-text">{companySuccess}</p>}
+
+          <button
+            onClick={handleSendMail}
+            disabled={sendingMail || !companyDetails.companyName.trim() || !companyDetails.companyEmail.trim()}
+            className={`send-mail-btn ${(sendingMail || !companyDetails.companyName.trim() || !companyDetails.companyEmail.trim()) ? 'disabled' : ''}`}
+          >
+            {sendingMail ? '📧 Sending...' : '📧 Send Invitation'}
+          </button>
+        </div>
+      </div>
+
+      {/* Student Data Upload Section */}
+      <div className="upload-section">
+        <h2 className="header">Student Data Upload Portal</h2>
 
         <div className={`file-box ${loading ? 'loading' : ''}`}>
           {loading ? (

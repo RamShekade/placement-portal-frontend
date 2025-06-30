@@ -35,6 +35,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import RoleHome from './Home/RoleHome'
 import Login from './student/components/Login'
 import Register from './student/components/Register'
 import Dashboard from './student/components/Dashboard'
@@ -45,10 +46,11 @@ import StudentDashboard from './student/pages/StudentDashboard'
 import ViewProfile from './student/pages/ViewProfile'
 import UnderDevelopmentPage from './student/pages/UnderDevelopmentPage'
 import ForgotPassword from './student/components/forgotPassword'
-import CompanyLogin from '../../../../Downloads/placement-portal-frontend/placement-portal-frontend/src/company/Login/CompanyLogin'
-import CompanyRegister from '../../../../Downloads/placement-portal-frontend/placement-portal-frontend/src/company/CompanyRegister'
-import CompanyDashboard from '../../../../Downloads/placement-portal-frontend/placement-portal-frontend/src/company/CompanyDashboard'
-import CompanySidebar from '../../../../Downloads/placement-portal-frontend/placement-portal-frontend/src/company/Jobposting/CompanySidebar'
+import CompanyLogin from './company/Login/CompanyLogin'
+import CompanyRegister from './company/CompanyRegister'
+import CompanyDashboard from './company/CompanyDashboard'
+import CompanySidebar from './company/Jobposting/CompanySidebar'
+import CompanyChangePassword from './company/Login/ChangePassword'
 
 function App() {
   return (
@@ -56,16 +58,19 @@ function App() {
       <Router>
         <Routes>
           {/* Public Routes - No authentication required */}
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<RoleHome />} />
+          <Route path="/student-login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/company-login" element={<CompanyLogin />} />
           
           {/* Semi-Protected Route - For password updates (uses existing auth from login) */}
           <Route path="/update-pass" element={<ChangePassword />} />
+
           
 
         <Route path="/companyRegi" element={<CompanyRegister />} />
+        <Route path='/company/update-pass' element={<CompanyChangePassword/>}/>
         <Route path="/company-dashboard" element={<CompanyDashboard />} />
         <Route path="/company/create-job" element={<CompanySidebar />} />
 
@@ -98,9 +103,9 @@ function App() {
           <Route 
             path="/upload" 
             element={
-              <ProtectedRoute>
+              
                 <TnpCoordinator />
-              </ProtectedRoute>
+              
             } 
           />
           <Route 
