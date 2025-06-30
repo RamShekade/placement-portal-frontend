@@ -53,7 +53,7 @@ const CompanyDashboard = () => {
       title: 'View Applicants',
       description: 'Track applications, review candidates, and manage the recruitment process.',
       action: 'View Applicants',
-      path: '/company/view-applicants',
+      path: 'view-applicants',
       color: '#1e1e3f'
     }
   ];

@@ -52,6 +52,10 @@ import CompanyDashboard from './company/CompanyDashboard'
 import CompanySidebar from './company/Jobposting/CompanySidebar'
 import CompanyChangePassword from './company/Login/ChangePassword'
 
+
+import ViewApplicants from './company/ViewApplicants/ViewApplicants'
+
+
 function App() {
   return (
     <AuthProvider>
@@ -73,6 +77,7 @@ function App() {
         <Route path='/company/update-pass' element={<CompanyChangePassword/>}/>
         <Route path="/company-dashboard" element={<CompanyDashboard />} />
         <Route path="/company/create-job" element={<CompanySidebar />} />
+        <Route path="/company-dashboard/view-applicants" element={<ViewApplicants />} />
 
 
           {/* Protected Routes - Authentication required */}
@@ -103,9 +108,9 @@ function App() {
           <Route 
             path="/upload" 
             element={
-              
+              <ProtectedRoute>
                 <TnpCoordinator />
-              
+              </ProtectedRoute>
             } 
           />
           <Route 
