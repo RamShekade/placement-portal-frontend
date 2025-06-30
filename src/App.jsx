@@ -108,9 +108,9 @@ function App() {
           <Route 
             path="/upload" 
             element={
-              <ProtectedRoute>
+            
                 <TnpCoordinator />
-              </ProtectedRoute>
+             
             } 
           />
           <Route 

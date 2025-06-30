@@ -145,7 +145,7 @@ const RoleHome = () => {
       {/* Recruiters Section */}
       <div className="recruiters-section">
         <div className="section-container">
-          <h2 className="section-title">Our Esteemed Recruiters</h2>
+          <h2 className="main-section-title">Our Esteemed Recruiters</h2>
           <p className="section-description">
             We're proud to partner with leading companies across industries to provide 
             exceptional opportunities to our students.
