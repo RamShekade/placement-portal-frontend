@@ -44,7 +44,7 @@ const CompanyDashboard = () => {
       title: 'View Job Listings',
       description: 'See all jobs your company has posted so far and manage existing postings.',
       action: 'View Jobs',
-      path: '/company/view-jobs',
+      path: '/under-dev',
       color: '#1e1e3f'
     },
     {

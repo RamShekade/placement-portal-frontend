@@ -51,11 +51,11 @@ const StudentDashboard = () => {
           <h3>📁 View Profile</h3>
           <p>Edit & View your personal and academic details here.</p>
         </div>
-        <div className="dashboard-card" onClick={() => handleNavigate('/under-dev')}>
+        <div className="dashboard-card" onClick={() => handleNavigate('/view-opportunities')}>
           <h3>📊 View Opportunities</h3>
           <p>Browse and apply for active company openings.</p>
         </div>
-        <div className="dashboard-card" onClick={() => handleNavigate('/under-dev')}>
+        <div className="dashboard-card" onClick={() => handleNavigate('/view-application-status')}>
           <h3>📝 Application Status</h3>
           <p>Check the current status of your applications.</p>
         </div>

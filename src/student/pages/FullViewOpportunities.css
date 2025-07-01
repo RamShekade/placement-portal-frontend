@@ -1,0 +1,125 @@
+.fullview-bg {
+  min-height: 100vh;
+  background: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+}
+
+.fv-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.fv-header {
+  background-color: #071168;
+  color: #fff;
+  padding: 2.3rem 1.5rem 2rem 1.5rem;
+  text-align: center;
+}
+
+.fv-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.fv-header p {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.fv-content {
+  padding: 2.1rem 2.2rem 2.2rem 2.2rem;
+}
+
+.fv-section h2 {
+  font-size: 1.25rem;
+  color: #071168;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.fv-section p {
+  color: #374151;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.fv-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.1rem 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+.fv-detail {
+  background: #f9fafb;
+  padding: 1rem 1.2rem;
+  border-radius: 0.85rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.fv-detail span:first-child {
+  font-weight: 600;
+  color: #6366f1;
+  margin-bottom: 0.1rem;
+  font-size: 1.01rem;
+}
+.fv-detail span:last-child {
+  color: #374151;
+  font-size: 1.01rem;
+  font-weight: 500;
+}
+
+.fv-apply-ctn {
+  text-align: center;
+  margin-top: 2.2rem;
+}
+.fv-apply-btn {
+  background-color: #071168;
+  color: #fff;
+  padding: 0.82rem 2.2rem;
+  font-size: 1.11rem;
+  font-weight: 600;
+  border-radius: 0.6rem;
+  border: none;
+  box-shadow: 0 3px 18px #6366f13a;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.18s;
+  letter-spacing: 0.01em;
+}
+.fv-apply-btn:hover {
+  background-color: #5f6bd8;
+  transform: translateY(-3px) scale(1.04);
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+  .fv-container {
+    max-width: 98vw;
+  }
+  .fv-content { padding: 1.1rem 1vw 1.3rem 1vw;}
+}
+
+@media (max-width: 600px) {
+  .fv-header { padding: 1.3rem 0.7rem 1.1rem 0.7rem; }
+  .fv-header h1 { font-size: 1.1rem; }
+  .fv-header p { font-size: 0.9rem;}
+  .fv-content { padding: 1rem 5px 1.1rem 5px;}
+  .fv-details-grid { gap: 0.7rem 0.5rem;}
+  .fv-detail { padding: 0.7rem 0.7rem; border-radius: 0.55rem;}
+  .fv-section h2 { font-size: 1rem;}
+  .fv-section p, .fv-detail span { font-size: 0.97rem;}
+  .fv-apply-btn { font-size: 0.98rem; padding: 0.66rem 1.1rem;}
+}
