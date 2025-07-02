@@ -123,7 +123,7 @@ const CompanyLogin = () => {
             </div>
 
             <div className="forgot-password-link">
-              <Link to="/forgot-password-company">Forgot Password?</Link>
+              <Link to="/company/forgot-pass">Forgot Password?</Link>
             </div>
             <br />
 
@@ -140,3 +140,4 @@ const CompanyLogin = () => {
 };
 
 export default CompanyLogin;
+
