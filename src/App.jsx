@@ -24,7 +24,7 @@ import CompanyForgotPassword from './company/Login/forgotPassword'
 
 import ViewApplicants from './company/ViewApplicants/ViewApplicants'
 import ViewApplicationStatus from './student/pages/ViewApplicationStatus'
-
+import UpdateViewProfile from './student/pages/UpdateViewProfile'
 
 function App() {
   return (
@@ -99,6 +99,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <ViewOpportunities />
+              </ProtectedRoute>
+            }
+          />
+          
+           <Route
+            path="/profile/update"
+            element={
+              <ProtectedRoute>
+                <UpdateViewProfile />
               </ProtectedRoute>
             }
           />

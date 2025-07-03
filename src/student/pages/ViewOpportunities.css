@@ -6,7 +6,7 @@
 }
 
 .oppo-main {
-  max-width: 1220px;
+  max-width: 1090px;
   margin: 0 auto;
   padding: 2rem 1rem 0 1rem;
   flex: 1;
@@ -33,7 +33,7 @@
 
 .jobs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
   gap: 2rem;
   margin-top: 0.7rem;
 }
@@ -47,10 +47,11 @@
   border: 1.5px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  min-height: 310px;
+  min-height: 250px;
   transition: box-shadow .23s cubic-bezier(.4,0,.2,1), transform .24s cubic-bezier(.4,0,.2,1), border-color .23s;
   outline: none;
 }
+
 .job-card:focus,
 .job-card:hover {
   box-shadow: 0 14px 38px 0 rgba(59,130,246,0.18);
@@ -81,6 +82,26 @@
   color: #1e3a8a;
   letter-spacing: 0.01em;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+.job-company-initials {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #1e40af 0%, #6366f1 100%);
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+  border: 1px solid #e5e7eb;
 }
 
 .job-card-body {
@@ -109,12 +130,17 @@
   color: #334155;
   font-size: 1rem;
   font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
 }
 
 .job-type {
-  padding: 3px 13px;
+  padding: 10px 13px;
   border-radius: 6px;
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -139,6 +165,42 @@
   color: #334155;
   font-size: 0.97rem;
   line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.job-meta-info {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 10px;
+}
+
+.job-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.meta-icon {
+  font-size: 0.9rem;
+}
+
+.meta-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .oppo-footer {
@@ -167,7 +229,7 @@
   display: flex;
   align-items: center;
   gap: 54px;
-  animation: scroll-left 8s linear infinite;
+  animation: scroll-left 22s linear infinite;
 }
 .recruiter-logo {
   height: 56px;
@@ -185,6 +247,67 @@
   100% { transform: translateX(-50%);}
 }
 
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  color: #1e40af;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 4px solid #e2e8f0;
+  border-top-color: #6366f1;
+  animation: spinner 1s infinite linear;
+  margin-bottom: 1rem;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
+.error-message button {
+  background-color: #1e40af;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.error-message button:hover {
+  background-color: #1e3a8a;
+}
+
+.no-jobs-message {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
 /* Responsive Design */
 @media (max-width: 1000px) {
   .oppo-main { padding: 2rem 2vw 0 2vw; }
@@ -193,8 +316,8 @@
 @media (max-width: 700px) {
   .oppo-title { font-size: 1.3rem; }
   .oppo-main { padding: 1.1rem 2vw 0 2vw; }
-  .jobs-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .job-card { padding: 1rem 0.7rem 0.8rem 0.7rem; min-height: 220px;}
+  .jobs-grid { grid-template-columns: 1fr; gap: 1rem;align-items: center }
+  .job-card { padding: 1rem 0.9rem 0.8rem 0.9rem; min-height: 220px;margin-left: 20px;}
   .job-company-logo { width: 38px; height: 38px;}
   .job-company { font-size: 1rem; }
   .job-label, .job-value, .job-type, .job-date, .job-desc { font-size: 0.92rem!important; }
@@ -202,14 +325,18 @@
   .recruiter-logo { height: 38px; }
   .logos-marquee-track { gap: 24px; }
   .oppo-footer { margin-top: 25px; padding: 18px 0 13px 0;}
+  .job-meta-info { flex-direction: column; gap: 5px; }
+  .job-company-initials { width: 38px; height: 38px; font-size: 14px; }
 }
 @media (max-width: 480px) {
   .oppo-title { font-size: 1.07rem; }
   .oppo-underline { height: 3px; width: 42px;}
-  .job-card { padding: 0.7rem 0.4rem 0.6rem 0.4rem; min-height: 150px;border: black solid 1px}
+  .job-card { padding: 0.7rem 0.4rem 0.6rem 0.4rem; min-height: 150px;}
   .job-company-logo { width: 28px; height: 28px;}
   .job-company { font-size: 0.97rem; }
   .recruiters-title { font-size: 0.95rem; }
-  .recruiter-logo { height: 50px; }
-  .logos-marquee-track { gap: 13px;}
+  .recruiter-logo { height: 27px; }
+  .logos-marquee-track { gap: 13px; }
+  .job-desc { -webkit-line-clamp: 2; }
+  .job-company-initials { width: 28px; height: 28px; font-size: 12px; }
 }

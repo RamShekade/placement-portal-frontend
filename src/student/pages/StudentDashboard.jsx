@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CollegeHeader from '../../shared/CollegeHeader';
 import './StudentDashboard.css';
+// ICONS
+import { FaUserCircle, FaBriefcase, FaFileAlt, FaSignOutAlt, FaBullhorn } from 'react-icons/fa';
 
 const StudentDashboard = () => {
   const grNumber = localStorage.getItem('gr_number') || 'Unknown';
@@ -27,7 +29,7 @@ const StudentDashboard = () => {
         <img src="/banner.jpg" alt="Recruiters Banner" className="banner-image" />
       </div>
 
-      <div className="announcement-strip">
+     <div className="announcement-strip">
         <marquee>📢 Today: Capgemini is visiting for placements! Prepare your documents and attend on time.</marquee>
       </div>
 
@@ -43,20 +45,32 @@ const StudentDashboard = () => {
             <p>GR No: <strong>{grNumber}</strong></p>
           </div>
         </div>
-        <button onClick={handleLogout} className="logout-button">Logout</button>
+        <button onClick={handleLogout} className="logout-button">
+          <FaSignOutAlt style={{ marginRight: 8 }} />
+          Logout
+        </button>
       </div>
 
       <div className="card-grid">
         <div className="dashboard-card" onClick={() => handleNavigate('/profile')}>
-          <h3>📁 View Profile</h3>
+          <div className="dashboard-card-icon profile">
+            <FaUserCircle />
+          </div>
+          <h3>View Profile</h3>
           <p>Edit & View your personal and academic details here.</p>
         </div>
         <div className="dashboard-card" onClick={() => handleNavigate('/view-opportunities')}>
-          <h3>📊 View Opportunities</h3>
+          <div className="dashboard-card-icon opportunities">
+            <FaBriefcase />
+          </div>
+          <h3>View Opportunities</h3>
           <p>Browse and apply for active company openings.</p>
         </div>
         <div className="dashboard-card" onClick={() => handleNavigate('/view-application-status')}>
-          <h3>📝 Application Status</h3>
+          <div className="dashboard-card-icon status">
+            <FaFileAlt />
+          </div>
+          <h3>Application Status</h3>
           <p>Check the current status of your applications.</p>
         </div>
       </div>
@@ -64,4 +78,4 @@ const StudentDashboard = () => {
   );
 };
 
-export default StudentDashboard;
+export default StudentDashboard;  

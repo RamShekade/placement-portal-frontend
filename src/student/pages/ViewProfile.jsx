@@ -22,6 +22,8 @@ import {
 } from 'react-icons/fa';
 import { SiCodeforces } from "react-icons/si";
 import './ViewProfile.css';
+import { useNavigate } from "react-router-dom";
+
 
 const TABS = [
   { id: 'basic', label: 'Basic', icon: <FaUser /> },
@@ -105,7 +107,12 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('basic');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+const navigate = useNavigate();
 
+
+    const handleNavigate = (path) => {
+    navigate(path);
+  };
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -493,7 +500,7 @@ const Profile = () => {
           {renderContent()}
         </div>
       </div>
-      <button className="edit-button" onClick={() => alert("Redirect to edit page")}>
+      <button className="edit-button" onClick={() => handleNavigate("/profile/update")}>
         <FaEdit /> Edit Profile
       </button>
     </div>

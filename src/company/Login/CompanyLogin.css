@@ -7,16 +7,17 @@
 
 html, body, #root {
   height: 100%;
-  width: 90%;
+  width: 100%;
   font-family: 'Segoe UI', sans-serif;
 }
 
 .login-wrapper {
   display: flex;
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   background-color: #ffffff;
 }
+
 
 /* Left Section */
 .left-panel {
