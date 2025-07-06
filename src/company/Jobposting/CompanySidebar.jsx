@@ -3,7 +3,7 @@ import CollegeHeader from '../../shared/CollegeHeader';
 import JobRole from './sections/JobRole';
 import Requirements from './sections/Requirements';
 import Hiring from './sections/Hiring';
-import SalaryDetails from './sections/Salary';
+import SalaryDetails from './sections/SalaryDetails';
 import { FaCheckCircle } from 'react-icons/fa';
 
 const CompanySidebar = () => {

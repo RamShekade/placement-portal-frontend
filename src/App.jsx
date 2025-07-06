@@ -25,6 +25,7 @@ import CompanyForgotPassword from './company/Login/forgotPassword'
 import ViewApplicants from './company/ViewApplicants/ViewApplicants'
 import ViewApplicationStatus from './student/pages/ViewApplicationStatus'
 import UpdateViewProfile from './student/pages/UpdateViewProfile'
+import ViewJobListings from './company/ViewJobListing/ViewJobListings'
 
 function App() {
   return (
@@ -51,7 +52,7 @@ function App() {
         
         <Route path="/company-dashboard/view-applicants" element={<ViewApplicants />} />
 
-
+        <Route path='/company-dashboard/view-job-listings' element={<ViewJobListings/>}/>
           {/* Protected Routes - Authentication required */}
           <Route 
             path="/student-dashboard" 

@@ -1,52 +1,211 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import axios from "axios";
+import { FaSync, FaExclamationCircle } from "react-icons/fa";
 import CollegeHeader from "../../shared/CollegeHeader";
 import "./ViewApplicants.css";
 
-const applicantsData = {
-  "Python Developer - TCS": [
-    { name: "Ashitosh Sabale", email: "ashitosh@example.com", branch: "IT", cgpa: "8.04", status: "Sorry to say" },
-    { name: "Neha Sharma", email: "neha@example.com", branch: "Comp", cgpa: "8.9", status: "Selected" },
-    { name: "Ravi Mehta", email: "ravi@example.com", branch: "IT", cgpa: "7.5", status: "Rejected" },
-    { name: "Kshitij Sharma", email: "rohit@example.com", branch: "IT", cgpa: "9.2", status: "Selected" },
-  ],
-  "Frontend Engineer - TCS": [
-    { name: "Priya Sharma", email: "priya@example.com", branch: "IT", cgpa: "8.8", status: "Selected" },
-    { name: "Kunal Desai", email: "kunal@example.com", branch: "Comp", cgpa: "7.8", status: "Under Review" },
-    { name: "Sneha Gupta", email: "sneha@example.com", branch: "IT", cgpa: "8.4", status: "Rejected" },
-  ],
-  "Backend Engineer - TCS": [
-    { name: "Rohit Nair", email: "rohit@example.com", branch: "IT", cgpa: "8.2", status: "Selected" },
-    { name: "Megha Jain", email: "megha@example.com", branch: "Comp", cgpa: "9.1", status: "Under Review" },
-    { name: "Harsh Vora", email: "harsh@example.com", branch: "IT", cgpa: "7.7", status: "Rejected" },
-  ],
-  "Full Stack Developer - TCS": [
-    { name: "Tanvi Singh", email: "tanvi@example.com", branch: "Comp", cgpa: "8.7", status: "Under Review" },
-    { name: "Jay Shah", email: "jay@example.com", branch: "IT", cgpa: "8.3", status: "Selected" },
-    { name: "Divya Raj", email: "divya@example.com", branch: "Comp", cgpa: "7.9", status: "Rejected" },
-  ],
-};
-
 const ViewApplicants = () => {
+  // State for job and applicant data
+  const [jobs, setJobs] = useState([]);
+  const [applicantsData, setApplicantsData] = useState({});
+  const [selectedJobId, setSelectedJobId] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
   const [showExportOptions, setShowExportOptions] = useState(false);
+  
+  // Loading and error states
+  const [loadingJobs, setLoadingJobs] = useState(true);
+  const [loadingApplicants, setLoadingApplicants] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleRoleClick = (role) => {
-    setSelectedRole(role);
+  // Fetch all jobs when component mounts
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  // Fetch applicants when a job is selected
+  useEffect(() => {
+    if (selectedJobId) {
+      fetchApplicantsForJob(selectedJobId);
+    }
+  }, [selectedJobId]);
+  
+  // Pre-load data for all jobs when jobs are loaded
+  useEffect(() => {
+    // Pre-fetch applicants for all jobs on initial load
+    const preloadAllJobsData = async () => {
+      if (jobs && jobs.length > 0) {
+        // Set the first job as selected by default
+        setSelectedJobId(jobs[0].job_id);
+        
+        // Preload applicant data for all jobs in the background
+        for (const job of jobs) {
+          try {
+            const response = await axios.get(
+              `https://placement-portal-backend.ramshekade20.workers.dev/api/company/applications/${job.job_id}`,
+              { withCredentials: true }
+            );
+            
+            if (response.data && response.data.success) {
+              const roleKey = `${job.job_title || 'Unknown'} - ${job.company || 'Company'}`;
+              const applications = Array.isArray(response.data.applications) 
+                ? response.data.applications 
+                : [];
+              
+              const formattedApplicants = applications.map(app => ({
+                name: `${app.first_name || ''} ${app.last_name || ''}`.trim() || 'Unknown',
+                email: app.email || 'unknown@email.com',
+                branch: app.department || 'Unknown',
+                cgpa: app.cgpa || 'N/A',
+                status: app.status || 'Under Review',
+                application_id: app.application_id || null,
+                student_id: app.student_id || null
+              }));
+              
+              setApplicantsData(prevData => ({
+                ...prevData,
+                [roleKey]: formattedApplicants
+              }));
+            }
+          } catch (error) {
+            console.error(`Error pre-loading data for job ${job.job_id}:`, error);
+          }
+        }
+      }
+    };
+    
+    if (!loadingJobs && jobs.length > 0) {
+      preloadAllJobsData();
+    }
+  }, [jobs, loadingJobs]);
+
+  const fetchJobs = async () => {
+    try {
+      setLoadingJobs(true);
+      setError(null);
+      
+      const response = await axios.get(
+        'https://placement-portal-backend.ramshekade20.workers.dev/api/company/view-jobs',
+        { withCredentials: true }
+      );
+      
+      if (response.data && response.data.success) {
+        setJobs(response.data.jobs || []);
+      } else {
+        throw new Error(response.data?.message || 'Failed to fetch jobs');
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      setError(error.response?.data?.message || 'Unable to load jobs. Please try again later.');
+    } finally {
+      setLoadingJobs(false);
+    }
   };
 
-  const getCurrentDateTime = () => {
-    return "2025-06-30 10:49:17";
+  const fetchApplicantsForJob = async (jobId) => {
+    try {
+      setLoadingApplicants(true);
+      
+      const response = await axios.get(
+        `https://placement-portal-backend.ramshekade20.workers.dev/api/company/applications/${jobId}`,
+        { withCredentials: true }
+      );
+      
+      console.log(response.data);
+      
+      if (response.data && response.data.success) {
+        // Find the selected job to create the role key
+        const selectedJob = jobs.find(job => job.job_id === jobId);
+        
+        if (selectedJob) {
+          const roleKey = `${selectedJob.job_title} - ${selectedJob.company || 'Company'}`;
+          setSelectedRole(roleKey);
+          
+          // Process the applications data - ensure it's an array
+          const applications = Array.isArray(response.data.applications) 
+            ? response.data.applications 
+            : [];
+          
+          // Format the applicants data
+          const formattedApplicants = applications.map(app => ({
+            name: `${app.first_name || ''} ${app.last_name || ''}`.trim() || 'Unknown',
+            email: app.email || 'unknown@email.com',
+            branch: app.department || 'Unknown',
+            cgpa: app.cgpa || 'N/A',
+            status: app.status || 'Under Review',
+            application_id: app.application_id || null,
+            student_id: app.student_id || null
+          }));
+          
+          // Create or update the applicants data for this role
+          setApplicantsData(prevData => ({
+            ...prevData,
+            [roleKey]: formattedApplicants
+          }));
+        }
+      } else {
+        throw new Error(response.data?.message || 'Failed to fetch applicants');
+      }
+    } catch (error) {
+      console.error('Error fetching applicants:', error);
+      // Create an empty array for this job if there's an error
+      const selectedJob = jobs.find(job => job.job_id === jobId);
+      if (selectedJob) {
+        const roleKey = `${selectedJob.job_title} - ${selectedJob.company || 'Company'}`;
+        setSelectedRole(roleKey);
+        setApplicantsData(prevData => ({
+          ...prevData,
+          [roleKey]: []
+        }));
+      }
+    } finally {
+      setLoadingApplicants(false);
+    }
   };
 
-  const getCurrentUser = () => {
-    return "kshitij-dmce";
+  const handleRoleClick = (jobId) => {
+    setSelectedJobId(jobId);
+    // The selectedRole will be set in the fetchApplicantsForJob function
   };
+
+  const updateApplicantStatus = async (applicationId, newStatus) => {
+    try {
+      // Optimistically update UI
+      setApplicantsData(prevData => {
+        const updatedData = { ...prevData };
+        
+        if (selectedRole && updatedData[selectedRole]) {
+          updatedData[selectedRole] = updatedData[selectedRole].map(app => 
+            app.application_id === applicationId ? { ...app, status: newStatus } : app
+          );
+        }
+        
+        return updatedData;
+      });
+      
+      // Send update to server
+      await axios.post(
+        'https://placement-portal-backend.ramshekade20.workers.dev/api/company/update-application-status',
+        {
+          application_id: applicationId,
+          status: newStatus
+        },
+        { withCredentials: true }
+      );
+      
+    } catch (error) {
+      console.error('Error updating applicant status:', error);
+      // Revert optimistic update if there's an error
+      fetchApplicantsForJob(selectedJobId);
+      alert('Failed to update status. Please try again.');
+    }
+  };
+
 
   const exportToExcel = () => {
-    if (!selectedRole) return;
+    if (!selectedRole || !applicantsData[selectedRole]) return;
 
     try {
       const data = applicantsData[selectedRole];
@@ -60,7 +219,7 @@ const ViewApplicants = () => {
         ['Generated On:', getCurrentDateTime()],
         ['Total Applicants:', data.length],
         ['Selected:', data.filter(app => app.status === "Selected").length],
-        ['Under Review:', data.filter(app => app.status === "Under Review").length],
+        ['Under Review:', data.filter(app => app.status === "Under Review" || app.status === "applied").length],
         ['Rejected:', data.filter(app => app.status === "Rejected").length],
         [''],
         ['Name', 'Email', 'Branch', 'CGPA', 'Status']
@@ -76,11 +235,10 @@ const ViewApplicants = () => {
         'Email': applicant.email,
         'Branch': applicant.branch,
         'CGPA': applicant.cgpa,
-        'Status': applicant.status
+        'Status': applicant.status === "applied" ? "Under Review" : applicant.status
       })), { origin: 'A12', skipHeader: false });
 
       // Style the header row
-      const range = XLSX.utils.decode_range(ws['!ref']);
       ws['!cols'] = [
         { wch: 20 }, // Name
         { wch: 30 }, // Email
@@ -104,7 +262,7 @@ const ViewApplicants = () => {
   };
 
   const exportToPDF = () => {
-    if (!selectedRole) return;
+    if (!selectedRole || !applicantsData[selectedRole]) return;
 
     try {
       const data = applicantsData[selectedRole];
@@ -148,7 +306,7 @@ const ViewApplicants = () => {
       
       // Right column statistics
       doc.text(`Selected: ${data.filter(app => app.status === "Selected").length}`, 110, 79);
-      doc.text(`Under Review: ${data.filter(app => app.status === "Under Review").length}`, 20, 87);
+      doc.text(`Under Review: ${data.filter(app => app.status === "Under Review" || app.status === "applied").length}`, 20, 87);
       doc.text(`Rejected: ${data.filter(app => app.status === "Rejected").length}`, 110, 87);
 
       // Add another decorative line before table
@@ -162,7 +320,7 @@ const ViewApplicants = () => {
         applicant.email,
         applicant.branch,
         applicant.cgpa,
-        applicant.status
+        applicant.status === "applied" ? "Under Review" : applicant.status
       ]);
 
       // Create table with enhanced styling and improved width
@@ -260,19 +418,41 @@ const ViewApplicants = () => {
   };
 
   const getTotalApplicants = () => {
-    return Object.values(applicantsData).reduce((total, applicants) => total + applicants.length, 0);
+    // Safely calculate the total applicants
+    try {
+      return Object.values(applicantsData || {}).reduce((total, applicants) => {
+        return total + (Array.isArray(applicants) ? applicants.length : 0);
+      }, 0);
+    } catch (error) {
+      console.error("Error calculating total applicants:", error);
+      return 0;
+    }
   };
 
   const getSelectedCount = () => {
-    return Object.values(applicantsData).reduce((total, applicants) => {
-      return total + applicants.filter(app => app.status === "Selected").length;
-    }, 0);
+    // Safely calculate the selected count
+    try {
+      return Object.values(applicantsData || {}).reduce((total, applicants) => {
+        if (!Array.isArray(applicants)) return total;
+        return total + applicants.filter(app => app.status === "Selected").length;
+      }, 0);
+    } catch (error) {
+      console.error("Error calculating selected count:", error);
+      return 0;
+    }
   };
 
   const getUnderReviewCount = () => {
-    return Object.values(applicantsData).reduce((total, applicants) => {
-      return total + applicants.filter(app => app.status === "Under Review").length;
-    }, 0);
+    // Safely calculate the under review count
+    try {
+      return Object.values(applicantsData || {}).reduce((total, applicants) => {
+        if (!Array.isArray(applicants)) return total;
+        return total + applicants.filter(app => app.status === "Under Review" || app.status === "applied").length;
+      }, 0);
+    } catch (error) {
+      console.error("Error calculating under review count:", error);
+      return 0;
+    }
   };
 
   const getStatusClass = (status) => {
@@ -282,10 +462,15 @@ const ViewApplicants = () => {
       case "Rejected":
         return "applicant-status-rejected";
       case "Under Review":
+      case "applied":
         return "applicant-status-under-review";
       default:
         return "applicant-status-default";
     }
+  };
+
+  const getStatusDisplay = (status) => {
+    return status === "applied" ? "Under Review" : status;
   };
 
   // Close export dropdown when clicking outside
@@ -301,6 +486,53 @@ const ViewApplicants = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showExportOptions]);
+
+  // Show loading state for jobs
+  if (loadingJobs) {
+    return (
+      <div className="applicant-dashboard-page">
+        <CollegeHeader />
+        <div className="applicant-loading">
+          <div className="applicant-loading-spinner"></div>
+          <p>Loading jobs data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="applicant-dashboard-page">
+        <CollegeHeader />
+        <div className="applicant-error">
+          <FaExclamationCircle className="applicant-error-icon" />
+          <h3>Error Loading Data</h3>
+          <p>{error}</p>
+          <button onClick={fetchJobs} className="applicant-retry-btn">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state if no jobs
+  if (!jobs || jobs.length === 0) {
+    return (
+      <div className="applicant-dashboard-page">
+        <CollegeHeader />
+        <div className="applicant-empty">
+          <div className="applicant-empty-icon">📋</div>
+          <h3>No Jobs Found</h3>
+          <p>You haven't posted any jobs yet. Post a job first to see applicants.</p>
+          <button onClick={() => window.location.href = '/company/post-job'} className="applicant-action-btn">
+            Post a Job
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="applicant-dashboard-page">
@@ -341,30 +573,44 @@ const ViewApplicants = () => {
         <div className="applicant-positions-section">
           <h3 className="applicant-section-title">🎯 Available Positions</h3>
           <div className="applicant-positions-grid">
-            {Object.keys(applicantsData).map((role) => (
-              <div
-                key={role}
-                className={`applicant-position-card ${selectedRole === role ? "applicant-position-active" : ""}`}
-                onClick={() => handleRoleClick(role)}
-              >
-                
-                <div className="applicant-position-content">
-                  <div className="applicant-position-title">{role.split(" - ")[0]}</div>
-                  <div className="applicant-position-company">{role.split(" - ")[1]}</div>
-                  <div className="applicant-position-stats">
-                    <span className="applicant-applicant-count">
-                      {applicantsData[role].length} applicant{applicantsData[role].length !== 1 ? 's' : ''}
-                    </span>
-                    <span className="applicant-selected-count">
-                      {applicantsData[role].filter(app => app.status === "Selected").length} selected
-                    </span>
+            {jobs.map((job) => {
+              const roleKey = `${job.job_title || 'Unknown'} - ${job.company || 'Company'}`;
+              const applicants = applicantsData[roleKey] || [];
+              const hasApplicants = Array.isArray(applicants) && applicants.length > 0;
+              const selectedCount = hasApplicants 
+                ? applicants.filter(app => app.status === "Selected").length
+                : 0;
+              
+              return (
+                <div
+                  key={job.job_id}
+                  className={`applicant-position-card ${selectedRole === roleKey ? "applicant-position-active" : ""}`}
+                  onClick={() => handleRoleClick(job.job_id)}
+                >
+                  <div className="applicant-position-content">
+                    <div className="applicant-position-title">{job.job_title || 'Untitled'}</div>
+                    <div className="applicant-position-company">{job.job_type || 'Full-Time'}</div>
+                    <div className="applicant-position-stats">
+                      {/* Always show applicant count, even while loading */}
+                      <span className="applicant-applicant-count">
+                        {hasApplicants ? 
+                          `${applicants.length} applicant${applicants.length !== 1 ? 's' : ''}` : 
+                          loadingApplicants && selectedJobId === job.job_id ? 
+                            "Loading..." : "0 applicants"}
+                      </span>
+                      {hasApplicants && selectedCount > 0 && (
+                        <span className="applicant-selected-count">
+                          {selectedCount} selected
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="applicant-position-arrow">
+                    <span>→</span>
                   </div>
                 </div>
-                <div className="applicant-position-arrow">
-                  <span>→</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -373,10 +619,15 @@ const ViewApplicants = () => {
             <div className="applicant-table-header">
               <h3 className="applicant-table-title">📊 Applicants for {selectedRole}</h3>
               <div className="applicant-table-actions">
+                <button onClick={() => fetchApplicantsForJob(selectedJobId)} className="applicant-refresh-btn">
+                  <FaSync className={loadingApplicants ? "rotating" : ""} />
+                  {loadingApplicants ? "Loading..." : "Refresh"}
+                </button>
                 <div className="applicant-export-dropdown">
                   <button 
                     className="applicant-export-btn" 
                     onClick={handleExportClick}
+                    disabled={!applicantsData[selectedRole] || applicantsData[selectedRole].length === 0}
                   >
                     📥 Export Data
                   </button>
@@ -394,49 +645,67 @@ const ViewApplicants = () => {
               </div>
             </div>
             
-            <div className="applicant-table-container">
-              <table className="applicant-applicants-table">
-                <thead>
-                  <tr>
-                    <th>👤 Name</th>
-                    <th>📧 Email</th>
-                    <th>🎓 Branch</th>
-                    <th>📊 CGPA</th>
-                    <th>📋 Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {applicantsData[selectedRole].map((applicant, index) => (
-                    <tr key={index} className="applicant-applicant-row">
-                      <td className="applicant-name-cell">
-                        <div className="applicant-name-avatar">
-                          {applicant.name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                        <span className="applicant-name-text">{applicant.name}</span>
-                      </td>
-                      <td className="applicant-email-cell">{applicant.email}</td>
-                      <td className="applicant-branch-cell">
-                        <span className="applicant-branch-badge">{applicant.branch}</span>
-                      </td>
-                      <td className="applicant-cgpa-cell">{applicant.cgpa}</td>
-                      <td className="applicant-status-cell">
-                        <span className={`applicant-status-badge ${getStatusClass(applicant.status)}`}>
-                          {applicant.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            <div className="applicant-table-footer">
-              <div className="applicant-footer-info">
-                <span className="applicant-last-updated">
-                  Last updated: {getCurrentDateTime()} by {getCurrentUser()}
-                </span>
+            {loadingApplicants ? (
+              <div className="applicant-loading applicant-loading-inline">
+                <div className="applicant-loading-spinner"></div>
+                <p>Loading applicants...</p>
               </div>
-            </div>
+            ) : applicantsData[selectedRole] && applicantsData[selectedRole].length > 0 ? (
+              <div className="applicant-table-container">
+                <table className="applicant-applicants-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Branch</th>
+                      <th>CGPA</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {applicantsData[selectedRole].map((applicant, index) => (
+                      <tr key={index} className="applicant-applicant-row">
+                        <td className="applicant-name-cell">
+                          <div className="applicant-name-avatar">
+                            {applicant.name.split(' ').map(n => n[0]).join('')}
+                          </div>
+                          <span className="applicant-name-text">{applicant.name}</span>
+                        </td>
+                        <td className="applicant-email-cell">{applicant.email}</td>
+                        <td className="applicant-branch-cell">
+                          <span className="applicant-branch-badge">{applicant.branch}</span>
+                        </td>
+                        <td className="applicant-cgpa-cell">{applicant.cgpa}</td>
+                        <td className="applicant-status-cell">
+                          <span className={`applicant-status-badge ${getStatusClass(applicant.status)}`}>
+                            {getStatusDisplay(applicant.status)}
+                          </span>
+                        </td>
+                        <td className="applicant-actions-cell">
+                          <select 
+                            value={applicant.status === "applied" ? "Under Review" : applicant.status}
+                            onChange={(e) => updateApplicantStatus(applicant.application_id, e.target.value)}
+                            className="applicant-status-select"
+                            style={{color:"black"}}
+                          >
+                            <option value="Under Review">Under Review</option>
+                            <option value="Selected">Selected</option>
+                            <option value="Rejected">Rejected</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="applicant-no-applicants">
+                <div className="applicant-no-applicants-icon">👥</div>
+                <h4>No Applicants Yet</h4>
+                <p>There are no applicants for this position yet.</p>
+              </div>
+            )}
           </div>
         )}
 

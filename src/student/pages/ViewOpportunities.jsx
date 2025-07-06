@@ -100,20 +100,22 @@ const ViewOpportunities = () => {
           </div>
         ) : (
           <div className="jobs-grid">
-            {jobs.map((job) => (
-              <div
-                key={job.job_id}
-                className="job-card"
-                tabIndex={0}
-                onClick={() => navigate(`/opportunity/${job.job_id}`, { state: { job } })}
-              >
+             {jobs
+               .filter(job => job.status === "active") // Add this filter
+                .map((job) => (
+                <div
+                  key={job.job_id}
+                  className="job-card"
+                  tabIndex={0}
+                  onClick={() => navigate(`/opportunity/${job.job_id}`, { state: { job } })}
+                >
                 <div className="job-card-header">
                   {job.company_logo ? (
                     <img
                       src={job.company_logo}
                       alt={job.company}
                       className="job-company-logo"
-                      loading="lazy"
+                      loading="eager"
                       onError={(e) => {
                         e.target.style.display = 'none';
                         e.target.nextSibling.style.display = 'flex';

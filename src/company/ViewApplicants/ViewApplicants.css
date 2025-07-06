@@ -293,8 +293,12 @@
   margin: 0;
 }
 
+/* Update this class for better responsive design */
 .applicant-table-actions {
   position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .applicant-export-dropdown {
@@ -319,6 +323,18 @@
   transform: translateY(-1px);
 }
 
+.applicant-export-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.applicant-export-btn:disabled:hover {
+  transform: none;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Update this class */
 .applicant-export-options {
   position: absolute;
   top: 100%;
@@ -327,10 +343,11 @@
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  z-index: 10;
+  z-index: 100; /* Increased z-index */
   min-width: 180px;
   margin-top: 8px;
   overflow: hidden;
+  display: block; /* Ensure it's displayed */
 }
 
 .applicant-export-option {
@@ -376,15 +393,21 @@
   color: #1e1e3f;
   font-size: 14px;
   border-bottom: 2px solid #e2e8f0;
+
 }
 
 .applicant-applicant-row {
   transition: all 0.2s ease;
 }
 
-.applicant-applicant-row:hover {
-  background: #f8fafc;
-  transform: scale(1.01);
+.applicant-applicants-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  white-space: nowrap; /* Prevent text wrapping */
+  max-width: 200px; /* Max width for cells */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .applicant-applicants-table td {
@@ -397,6 +420,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  white-space: normal; /* Allow wrapping */
 }
 
 .applicant-name-avatar {
@@ -419,11 +443,12 @@
   color: #1e1e3f;
 }
 
+/* And email cell should have more space */
 .applicant-email-cell {
   color: #6b7280;
   font-weight: 400;
+  max-width: 250px;
 }
-
 .applicant-branch-badge {
   background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
   color: #1e1e3f;
@@ -536,10 +561,21 @@
     grid-template-columns: 1fr;
   }
 
+    /* Update this class */
   .applicant-position-card {
-    padding: 20px;
-    flex-direction: column;
-    text-align: center;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    width: 100%; /* Added to ensure full width */
+    box-sizing: border-box; /* Added for consistent sizing */
   }
 
   .applicant-position-header {
@@ -604,4 +640,182 @@
   .applicant-empty-title {
     font-size: 18px;
   }
+}
+
+/* Additional classes for dynamic loading */
+.applicant-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  color: #1e1e3f;
+}
+
+.applicant-loading-inline {
+  padding: 30px 0;
+}
+
+.applicant-loading-spinner {
+  border: 4px solid rgba(30, 30, 63, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #1e1e3f;
+  width: 40px;
+  height: 40px;
+  animation: spinner-rotate 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+/* Ensure this is defined only once */
+@keyframes spinner-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.rotating {
+  animation: spinner-rotate 1s linear infinite;
+}
+
+.applicant-error, .applicant-empty {
+  text-align: center;
+  padding: 60px 20px;
+  max-width: 600px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.applicant-error-icon {
+  font-size: 48px;
+  color: #e53e3e;
+  margin-bottom: 20px;
+}
+
+.applicant-error h3, .applicant-empty h3 {
+  font-size: 24px;
+  color: #1e1e3f;
+  margin-bottom: 15px;
+}
+
+.applicant-error p, .applicant-empty p {
+  color: #4a5568;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.applicant-retry-btn, .applicant-action-btn {
+  background-color: #1e1e3f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.applicant-retry-btn:hover, .applicant-action-btn:hover {
+  background-color: #2d2d5f;
+  transform: translateY(-2px);
+}
+
+/* Update this class */
+.applicant-refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Added for better alignment */
+  gap: 8px;
+  background-color: #f8f9fa;
+  color: #1e1e3f;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 9px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px; /* Added to ensure consistent width */
+}
+
+.applicant-refresh-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.applicant-no-applicants {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e0;
+  margin-bottom: 20px;
+}
+
+.applicant-no-applicants-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  opacity: 0.6;
+}
+
+.applicant-no-applicants h4 {
+  font-size: 20px;
+  color: #1e1e3f;
+  margin-bottom: 10px;
+}
+
+.applicant-no-applicants p {
+  color: #4a5568;
+}
+
+/* Status select dropdown */
+.applicant-status-select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  font-size: 0.85rem;
+  width: 130px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.applicant-status-select:hover {
+  border-color: #1e1e3f;
+}
+
+.applicant-status-select:focus {
+  outline: none;
+  border-color: #1e1e3f;
+  box-shadow: 0 0 0 3px rgba(30, 30, 63, 0.1);
+}
+
+/* Add these classes */
+.applicant-loading-text {
+  font-size: 13px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.applicant-no-applicants-text {
+  font-size: 13px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+/* Add this class */
+.applicant-actions-cell {
+  text-align: center;
+}
+
+/* Add animation for newly added rows */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.applicant-applicant-row {
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease-out;
 }

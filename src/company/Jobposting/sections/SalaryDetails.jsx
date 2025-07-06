@@ -53,7 +53,7 @@ const SalaryDetails = ({ data = {}, setData, onNext }) => {
         return;
       }
 
-      console.log('Raw form data before processing:', data);
+      // console.log('Raw form data before processing:', data);
       
       // Try sending as JSON first (since it works in Postman)
       const jobPayload = {
@@ -88,26 +88,22 @@ const SalaryDetails = ({ data = {}, setData, onNext }) => {
           }
         });
         
-        // Debug FormData
-        console.log('FormData entries:');
-        for (let [key, value] of formData.entries()) {
-          console.log(`${key}: ${value}`);
-        }
         
-       const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/company/post-job', {
+        
+        const response = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/company/post-job', {
           method: 'POST',
           body: formData
         });
       
       const responseData = await response.json();
-      console.log('Response:', responseData, 'Status:', response.status);
+      console.log('Response Status:', response.status);
 
       if (!response.ok) {
         throw new Error(responseData.message || responseData.details || `Server error: ${response.status}`);
       }
 
       alert('Job posted successfully! The position is now live for students to apply.');
-      console.log('Job posted successfully:', responseData);
+      console.log('Job posted successfully');
       
       if (onNext) onNext();
 
@@ -135,7 +131,7 @@ const SalaryDetails = ({ data = {}, setData, onNext }) => {
     
     // Requirements section validation
     if (!data.batch || !(data.eligibleBranches && data.eligibleBranches.length)) {
-      alert('Please go back and fill all required fields in the Requirements section.');
+      alert('Please go back and fill required fields in the Requirements section.');
       return false;
     }
     
