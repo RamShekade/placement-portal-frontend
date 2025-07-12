@@ -94,7 +94,7 @@ for (let pair of formData.entries()) {
 
 
   try {
-    const res = await fetch('https://placement-portal-backend.ramshekade20.workers.dev/api/student/profile/create', {
+    const res = await fetch('https://placement-portal-backend.placementportal.workers.dev/api/student/profile/create', {
   method: 'POST',
   credentials: 'include', // ✅ sends HttpOnly cookie (JWT)
   body: formData,         // ✅ let browser set Content-Type for FormData

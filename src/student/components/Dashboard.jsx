@@ -88,7 +88,7 @@ const Dashboard = () => {
       }
 
       try {
-        const response = await fetch(`https://placement-portal-backend.ramshekade20.workers.dev/api/profile?gr_no=${gr_no}`);
+        const response = await fetch(`https://placement-portal-backend.placementportal.workers.dev/api/profile?gr_no=${gr_no}`);
         
         if (!response.ok) {
           if (response.status === 404) {

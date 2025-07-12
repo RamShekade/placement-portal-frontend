@@ -24,7 +24,7 @@ const CompanyForgotPassword = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const baseUrl = 'https://placement-portal-backend.ramshekade20.workers.dev';
+  const baseUrl = 'https://placement-portal-backend.placementportal.workers.dev';
   const otpInputs = useRef([]);
   const navigate = useNavigate();
 
