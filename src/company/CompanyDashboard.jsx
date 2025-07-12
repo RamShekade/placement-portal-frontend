@@ -41,7 +41,7 @@ const CompanyDashboard = () => {
         
         // Fetch jobs data from API
         const jobsResponse = await axios.get(
-          'https://placement-portal-backend.placementportal.workers.dev/api/company/view-jobs',
+          'https://placement-portal-backend.ramshekade20.workers.dev/api/company/view-jobs',
           { withCredentials: true }
         );
         
@@ -55,7 +55,7 @@ const CompanyDashboard = () => {
           for (const job of jobsData) {
             try {
               const appResponse = await axios.get(
-                `https://placement-portal-backend.placementportal.workers.dev/api/company/applications/${job.job_id}`,
+                `https://placement-portal-backend.ramshekade20.workers.dev/api/company/applications/${job.job_id}`,
                 { withCredentials: true }
               );
               

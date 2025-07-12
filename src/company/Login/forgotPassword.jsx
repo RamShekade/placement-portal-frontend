@@ -24,7 +24,7 @@ const CompanyForgotPassword = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const baseUrl = 'https://placement-portal-backend.placementportal.workers.dev';
+  const baseUrl = 'https://placement-portal-backend.ramshekade20.workers.dev';
   const otpInputs = useRef([]);
   const navigate = useNavigate();
 
@@ -147,7 +147,15 @@ const CompanyForgotPassword = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpString }),
       });
-      const data = await res.json();
+      const rawText = await res.json();
+console.log("🔍 Backend response text:", rawText); // Add this for debugging
+let data;
+try {
+  data = JSON.parse(rawText);
+} catch {
+  data = { error: rawText };
+}
+
       if (!res.ok) throw new Error(extractErrorMessage(data, 'OTP verification failed'));
       setResetToken(data.reset_token);
       setShowResetFields(true);
