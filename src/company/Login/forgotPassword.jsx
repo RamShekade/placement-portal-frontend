@@ -142,7 +142,7 @@ const CompanyForgotPassword = () => {
       return;
     }
     try {
-      const res = await fetch(`${baseUrl}/api/company-auth/forgot-password/verify-otp`, {
+      const res = await fetch(`${baseUrl}/api/company-auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpString }),
@@ -181,7 +181,7 @@ try {
       return;
     }
     try {
-      const res = await fetch(`${baseUrl}/api/company-auth/forgot-password/reset-password`, {
+      const res = await fetch(`${baseUrl}/api/company-auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
