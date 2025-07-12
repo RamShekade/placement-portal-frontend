@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CollegeHeader from '../shared/CollegeHeader'; // adjust path if needed
-
+import { useEffect } from 'react';
 const CompanyRegister = () => {
   const [data, setData] = useState({
     companyName: '',
@@ -10,6 +10,18 @@ const CompanyRegister = () => {
     hrPhone: '',
     website: '',
   });
+    useEffect(() => {
+  const storedName = localStorage.getItem('company_name') || '';
+  const storedEmail = localStorage.getItem('email') || '';
+
+  setData((prev) => ({
+    ...prev,
+    companyName: storedName,
+    companyEmail: storedEmail,
+  }));
+}, []);
+
+
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -19,12 +31,44 @@ const CompanyRegister = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Company Registered Successfully!');
-    console.log('Company Data:', data);
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  const formDataToSend = new FormData();
+  formDataToSend.append('company_name', data.companyName);
+  formDataToSend.append('email', data.companyEmail); // Optional if JWT handles this on backend
+  if (data.companyLogo) {
+    formDataToSend.append('company_logo', data.companyLogo);
+  }
+  formDataToSend.append('hr_person_name', data.hrName);
+  formDataToSend.append('hr_person_contact', data.hrPhone);
+  formDataToSend.append('company_website', data.website);
+
+  try {
+    const response = await fetch(
+      'https://placement-portal-backend.placementportal.workers.dev/api/company/profile/create',
+      {
+        method: 'POST',
+        body: formDataToSend,
+        credentials: 'include', // send auth cookie if set as HttpOnly
+      }
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert('✅ Company registered successfully!');
+       window.location.href = '/company-dashboard';
+    } else {
+      alert('❌ Registration failed: ' + (result.error || 'Unknown error'));
+    }
+
+    console.log('Server Response:', result);
+  } catch (error) {
+    console.error('❌ Error submitting form:', error);
+    alert('❌ An error occurred during submission.');
+  }
+};
   return (
     <>
       <CollegeHeader />
@@ -39,6 +83,7 @@ const CompanyRegister = () => {
               name="companyName"
               placeholder="e.g. Infosys Ltd"
               value={data.companyName}
+              disabled
               onChange={handleChange}
               required
               style={styles.input}
@@ -52,6 +97,7 @@ const CompanyRegister = () => {
               name="companyEmail"
               placeholder="e.g. hr@company.com"
               value={data.companyEmail}
+              disabled
               onChange={handleChange}
               required
               style={styles.input}
