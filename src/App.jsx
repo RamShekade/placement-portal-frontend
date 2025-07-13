@@ -26,6 +26,7 @@ import ViewApplicants from './company/ViewApplicants/ViewApplicants'
 import ViewApplicationStatus from './student/pages/ViewApplicationStatus'
 import UpdateViewProfile from './student/pages/UpdateViewProfile'
 import ViewJobListings from './company/ViewJobListing/ViewJobListings'
+import TPOLogin from './TnpCO/components/TPOLogin'
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           
           {/* Semi-Protected Route - For password updates (uses existing auth from login) */}
           <Route path="/update-pass" element={<ChangePassword />} />
+          <Route path='/tpo-login' element={<TPOLogin/>}/>
 
           
 

@@ -20,6 +20,61 @@ const ViewApplicants = () => {
   const [loadingApplicants, setLoadingApplicants] = useState(false);
   const [error, setError] = useState(null);
 
+  // Helper functions for current date/time and user info
+const getCurrentDateTime = () => {
+  // For development/testing purposes, use the fixed date if available
+ 
+  // For production, use actual current date and time in IST
+  const now = new Date();
+  
+  // Convert to IST (UTC+5:30)
+  const options = {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  };
+  
+  // Format using Intl.DateTimeFormat for IST
+  const formatter = new Intl.DateTimeFormat('en-IN', options);
+  const parts = formatter.formatToParts(now);
+  
+  // Extract individual components
+  const dateMap = {};
+  parts.forEach(part => {
+    dateMap[part.type] = part.value;
+  });
+  
+  // Assemble in YYYY-MM-DD HH:MM:SS format
+  return `${dateMap.day}-${dateMap.month}-${dateMap.year} ${dateMap.hour}:${dateMap.minute}:${dateMap.second}`;
+};
+const getCurrentUser = () => {
+  // First try to get user from localStorage (set during login)
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    return currentUser;
+  }
+  
+  // If not available in localStorage, try to get from company profile
+  const storedData = localStorage.getItem('companyData');
+  if (storedData) {
+    try {
+      const parsedData = JSON.parse(storedData);
+      if (parsedData && parsedData.hr_person_name) {
+        return parsedData.hr_person_name;
+      }
+    } catch (e) {
+      console.error("Error parsing company data from localStorage:", e);
+    }
+  }
+  
+  // Default fallback value
+  return "kshitij-dmce";
+};
   // Fetch all jobs when component mounts
   useEffect(() => {
     fetchJobs();

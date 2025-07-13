@@ -123,7 +123,7 @@ const RoleHome = () => {
               className="role-card"
               onMouseEnter={(e) => handleHover(e, true)}
               onMouseLeave={(e) => handleHover(e, false)}
-              onClick={() => navigate('/upload')}
+              onClick={() => navigate('/tpo-login')}
             >
               <FaUserTie className="card-icon" />
               <div className="card-title">TPO</div>

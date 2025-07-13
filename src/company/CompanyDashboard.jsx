@@ -38,13 +38,20 @@ const CompanyDashboard = () => {
         
         // Get current date and time
         setCurrentDateTime(updateCurrentDateTime());
-        
+
+        // fetch profile data
+        const profileResponse = await axios.get(
+          'https://placement-portal-backend.placementportal.workers.dev/api/company/profile/view',
+          { withCredentials: true }
+        );
         // Fetch jobs data from API
         const jobsResponse = await axios.get(
           'https://placement-portal-backend.placementportal.workers.dev/api/company/view-jobs',
           { withCredentials: true }
         );
-        
+        console.log(profileResponse.data.profile)
+        const profile = profileResponse.data.profile;
+        localStorage.setItem("currentUser",profile.hr_person_name);
         let jobsData = [];
         let applicationCount = 0;
         
