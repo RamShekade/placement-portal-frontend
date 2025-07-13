@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
 import './SalaryDetails.css';
+import axios from 'axios';
+
 
 const SalaryDetails = ({ data = {}, setData, onNext }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,24 +91,26 @@ const SalaryDetails = ({ data = {}, setData, onNext }) => {
         });
         
         
-        
-        const response = await fetch('https://placement-portal-backend.placementportal.workers.dev/api/company/post-job', {
-          credentials: true,
-          method: 'POST',
-          body: formData
-        });
-      
-      const responseData = await response.json();
-      console.log('Response Status:', response.status);
+const response = await axios.post(
+    'https://placement-portal-backend.placementportal.workers.dev/api/company/post-job',
+    formData,
+    {
+      withCredentials: true, // equivalent to fetch's `credentials: true`
+      headers: {
+        'Content-Type': 'multipart/form-data', // important for formData
+      },
+    }
+  );
 
-      if (!response.ok) {
-        throw new Error(responseData.message || responseData.details || `Server error: ${response.status}`);
+
+      if (response.status!=200) {
+        throw new Error(response.message || response.details || `Server error: ${response.status}`);
       }
 
       alert('Job posted successfully! The position is now live for students to apply.');
+      window.location.href = '/company-dashboard';
       console.log('Job posted successfully');
       
-      if (onNext) onNext();
 
     } catch (error) {
       console.error('Error posting job:', error);
