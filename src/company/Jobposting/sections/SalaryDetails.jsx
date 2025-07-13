@@ -91,6 +91,7 @@ const SalaryDetails = ({ data = {}, setData, onNext }) => {
         
         
         const response = await fetch('https://placement-portal-backend.placementportal.workers.dev/api/company/post-job', {
+          credentials: true,
           method: 'POST',
           body: formData
         });
